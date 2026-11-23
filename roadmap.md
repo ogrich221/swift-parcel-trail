@@ -1,4 +1,5 @@
 # Swift Delivery Express
+- [x] Apply the repository's updated sole-owner access and confirmation-code sign-in without undoing the customer dashboard; live access function checked, login controls rendered, and 27 tests passed. Email delivery and successful owner sign-in require inbox verification.
 - [x] Connect customer sign-in to a protected dashboard with overview, own shipments, tracking and history.
 - [x] Add permitted profile editing, private pictures, notifications, support conversations and secure settings; verified profile/picture/support/preferences read-back with a temporary customer.
 - [x] Enforce suspension and ownership with PostgreSQL tests; automatically refresh both workspaces; verify eight account sections on desktop/phone and phone logout.
