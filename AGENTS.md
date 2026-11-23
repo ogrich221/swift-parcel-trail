@@ -40,7 +40,7 @@ use the editor.
 - Owner email changes update both implicit sign-in and database eligibility; grant or transfer the single role only after the replacement email is verified, preserving account and audit history.
 - Test shipment suspension policies with isolated PostgreSQL fixtures and the actual migration SQL; never change live customer status to run security regressions.
 - Use the shared PasswordInput for password and passcode fields so visibility toggles never submit forms or change entered credentials.
-- Keep audit records append-only and update tracking through the transactional database function, so history corrections and current public status remain consistent.
+- Keep audit records append-only and reuse TrackingForm with a locked shipment identity for shipment-level travel progress; save through the transactional tracking function so history corrections and current public status remain consistent.
 - Keep payment views read-only until a verified payment gateway is configured, and never equate shipping charges with received revenue.
 - Publish website content through separate draft/published fields and validate structured content before making it public; public reads must use the published-only database function, with direct table reads restricted to the master administrator so drafts remain private.
 - Store delivery proof in the private master-only bucket and customer pictures in a private owner/master bucket; serve pictures through short-lived signed links so customer editing never exposes proof files.

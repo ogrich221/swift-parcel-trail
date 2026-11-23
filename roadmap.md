@@ -34,3 +34,5 @@
 - [x] Remove the admin dashboard route from the home page so the ceo 001 account gets no dashboard entry point there.
 
 - [x] Replace customer-account login wording with Login and remove the duplicate homepage sign-in link; preserve existing sign-in functionality.
+
+- [ ] Add shipment-level travel progress editing using the existing secured tracking updates; verify administrator save and public read-back.
