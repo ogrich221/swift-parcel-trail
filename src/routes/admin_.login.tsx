@@ -2,23 +2,29 @@ import { PasswordInput } from '@/components/password-input';
 import {createFileRoute, Link, useNavigate} from '@tanstack/react-router';
 import {useState, useEffect, type FormEvent} from 'react';
 import {useQueryClient} from '@tanstack/react-query';
-import {ShieldCheck, ArrowRight, Package, LockKeyhole, Mail, KeyRound} from 'lucide-react';
+import {ShieldCheck, ArrowRight, Package, LockKeyhole, Mail, KeyRound, Clock, RefreshCw} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {supabase} from '@/integrations/supabase/client';
 import {pageHead} from '@/lib/shipment';
 import {adminCredentials, masterAdminEmail} from '@/lib/admin/login';
+import {
+  sendAdminRecoveryCode,
+  verifyRecoveryCodeAndResetPasscode,
+  mapOtpErrorMessage,
+  RECOVERY_EXPIRY_MINUTES
+} from '@/lib/admin/recovery';
 
 export const Route = createFileRoute('/admin_/login')({
   head: () => ({
     meta: [
-      ...pageHead('ceo 001 sign in', 'Secure ceo 001 sign-in for Swift Delivery Express.').meta,
+      ...pageHead('ceo 001 sign in', 'Secure ceo 001 sign-in and recovery for Swift Delivery Express.').meta,
       {name: 'robots', content: 'noindex,nofollow'}
     ]
   }),
   component: AdminLogin
 });
 
-type LoginMode = 'login' | 'otp' | 'forgot' | 'recovery';
+type LoginMode = 'login' | 'otp' | 'recovery';
 
 function AdminLogin() {
   const [mode, setMode] = useState<LoginMode>('login');
@@ -27,6 +33,7 @@ function AdminLogin() {
   const [error, setError] = useState('');
   const [factor, setFactor] = useState('');
   const [code, setCode] = useState('');
+  const [hasRecoverySession, setHasRecoverySession] = useState(false);
   const navigate = useNavigate();
   const cache = useQueryClient();
 
@@ -36,19 +43,26 @@ function AdminLogin() {
     const type = params.get('type');
     if (type === 'recovery' || type === 'invite') {
       setMode('recovery');
+      setHasRecoverySession(true);
+      setMessage('Secure recovery link verified. Please enter your new passcode below.');
     }
     if (params.get('access_token')) {
       void (async () => {
         try {
           const {data: {user}} = await supabase.auth.getUser();
           if (user && user.email?.toLowerCase() === masterAdminEmail.toLowerCase()) {
-            const {data: master} = await supabase.rpc('is_master_admin');
-            if (master) {
-              await enter();
+            if (type === 'recovery') {
+              setHasRecoverySession(true);
+              setMode('recovery');
+            } else {
+              const {data: master} = await supabase.rpc('is_master_admin');
+              if (master) {
+                await enter();
+              }
             }
           }
         } catch {
-          // ignore
+          // ignore parsing error
         }
       })();
     }
@@ -65,7 +79,22 @@ function AdminLogin() {
     await navigate({to: '/admin'});
   }
 
-  async function sendOtpCode() {
+  async function handleSendRecoveryCode() {
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await sendAdminRecoveryCode(window.location.origin);
+      setMessage(res.message);
+      setMode('recovery');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not dispatch recovery code.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleSendOtpCode() {
     setBusy(true);
     setError('');
     setMessage('');
@@ -78,7 +107,7 @@ function AdminLogin() {
       });
       if (err) throw err;
       setMode('otp');
-      setMessage(`Confirmation code sent to ${masterAdminEmail}. Please check your inbox and enter the code below.`);
+      setMessage(`Confirmation code sent to ${masterAdminEmail}. Please enter the 6-digit code below.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not send confirmation code.');
     } finally {
@@ -95,7 +124,21 @@ function AdminLogin() {
     const email = masterAdminEmail;
 
     try {
-      if (mode === 'otp') {
+      if (mode === 'recovery') {
+        const token = String(f.get('token') ?? '').trim();
+        const password = String(f.get('password') ?? '');
+        const confirm = String(f.get('confirm') ?? '');
+
+        await verifyRecoveryCodeAndResetPasscode({
+          token,
+          password,
+          confirm,
+          hasActiveSession: hasRecoverySession
+        });
+
+        setMessage('New passcode saved. Entering admin dashboard…');
+        await enter();
+      } else if (mode === 'otp') {
         const token = String(f.get('token') ?? '').trim();
         if (!token) throw new Error('Please enter the confirmation code.');
 
@@ -113,7 +156,7 @@ function AdminLogin() {
           });
         }
 
-        if (verifyResult.error) throw verifyResult.error;
+        if (verifyResult.error) throw new Error(mapOtpErrorMessage(verifyResult.error.message));
 
         const {data: master, error: roleError} = await supabase.rpc('is_master_admin');
         if (roleError || !master) {
@@ -121,22 +164,10 @@ function AdminLogin() {
           throw new Error('Access is not authorised for this workspace.');
         }
         await enter();
-      } else if (mode === 'forgot') {
-        const {error: err} = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/admin/login'
-        });
-        if (err) throw err;
-        setMessage('If the authorised account exists, check your email for a secure recovery link.');
-      } else if (mode === 'recovery') {
-        const password = String(f.get('password'));
-        if (password !== String(f.get('confirm'))) throw new Error('Passcodes do not match.');
-        const {error: err} = await supabase.auth.updateUser({password});
-        if (err) throw err;
-        setMessage('Passcode saved. You can now sign in securely.');
-        setMode('login');
       } else {
+        const password = String(f.get('password') ?? '');
         const {error: err} = await supabase.auth.signInWithPassword(
-          adminCredentials(String(f.get('password') ?? ''))
+          adminCredentials(password)
         );
         if (err) throw err;
         const {data: master, error: roleError} = await supabase.rpc('is_master_admin');
@@ -147,7 +178,7 @@ function AdminLogin() {
         await enter();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign-in could not be completed.');
+      setError(err instanceof Error ? err.message : 'Authentication could not be completed.');
     } finally {
       setBusy(false);
     }
@@ -171,18 +202,18 @@ function AdminLogin() {
             ? 'Verify your identity.'
             : mode === 'otp'
               ? 'Enter confirmation code.'
-              : mode === 'forgot'
-                ? 'Recover your access.'
-                : mode === 'recovery'
-                  ? 'Set your secure passcode.'
-                  : 'ceo 001'}
+              : mode === 'recovery'
+                ? 'Recover admin access.'
+                : 'ceo 001'}
         </h1>
         <p>
           {factor
             ? 'Enter the code from your authenticator.'
             : mode === 'otp'
               ? `A secure confirmation code was dispatched to ${masterAdminEmail}.`
-              : 'One workspace. Complete operational control.'}
+              : mode === 'recovery'
+                ? `Verify your one-time code sent to ${masterAdminEmail} and create a new passcode.`
+                : 'One workspace. Complete operational control.'}
         </p>
 
         {factor ? (
@@ -230,22 +261,59 @@ function AdminLogin() {
               </label>
             )}
 
-            {(mode === 'login' || mode === 'recovery') && (
+            {mode === 'recovery' && !hasRecoverySession && (
               <label>
-                {mode === 'recovery' ? 'New passcode' : 'Passcode'}
-                <PasswordInput
-                  name="password"
+                One-time verification code
+                <input
+                  name="token"
+                  type="text"
+                  placeholder="Enter 6-digit recovery code"
                   required
-                  minLength={8}
-                  autoComplete={mode === 'recovery' ? 'new-password' : 'current-password'}
+                  autoFocus
+                  autoComplete="one-time-code"
+                  className="font-mono text-center tracking-widest text-lg"
                 />
               </label>
             )}
 
             {mode === 'recovery' && (
+              <>
+                <label>
+                  New passcode
+                  <PasswordInput
+                    name="password"
+                    required
+                    minLength={8}
+                    placeholder="At least 8 characters"
+                    autoComplete="new-password"
+                  />
+                </label>
+                <label>
+                  Confirm new passcode
+                  <PasswordInput
+                    name="confirm"
+                    required
+                    minLength={8}
+                    placeholder="Repeat new passcode"
+                    autoComplete="new-password"
+                  />
+                </label>
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground my-1 bg-secondary/50 p-2 rounded border border-border/50">
+                  <Clock size={13} className="shrink-0 text-primary" />
+                  <span>Codes expire in {RECOVERY_EXPIRY_MINUTES} minutes and can only be used once.</span>
+                </div>
+              </>
+            )}
+
+            {mode === 'login' && (
               <label>
-                Confirm new passcode
-                <PasswordInput name="confirm" required minLength={8} />
+                Passcode
+                <PasswordInput
+                  name="password"
+                  required
+                  minLength={8}
+                  autoComplete="current-password"
+                />
               </label>
             )}
 
@@ -254,11 +322,9 @@ function AdminLogin() {
                 ? 'Please wait…'
                 : mode === 'otp'
                   ? 'Verify Code & Access Workspace'
-                  : mode === 'forgot'
-                    ? 'Send Recovery Link'
-                    : mode === 'recovery'
-                      ? 'Save Passcode'
-                      : 'Sign In to Workspace'}
+                  : mode === 'recovery'
+                    ? 'Verify Code & Set New Passcode'
+                    : 'Sign In to Workspace'}
               <ArrowRight />
             </Button>
           </form>
@@ -283,7 +349,7 @@ function AdminLogin() {
                 variant="outline"
                 size="sm"
                 disabled={busy}
-                onClick={sendOtpCode}
+                onClick={handleSendOtpCode}
                 className="flex items-center justify-center gap-2"
               >
                 <Mail size={14} /> Send confirmation code to email
@@ -292,13 +358,37 @@ function AdminLogin() {
                 type="button"
                 variant="link"
                 size="sm"
+                onClick={handleSendRecoveryCode}
+                className="flex items-center justify-center gap-1.5"
+              >
+                <RefreshCw size={13} /> Forgot passcode? Recover access
+              </Button>
+            </>
+          )}
+
+          {mode === 'recovery' && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={handleSendRecoveryCode}
+                className="flex items-center justify-center gap-2"
+              >
+                <RefreshCw size={14} /> Resend one-time verification code
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
                 onClick={() => {
-                  setMode('forgot');
+                  setMode('login');
                   setError('');
                   setMessage('');
                 }}
               >
-                Forgot your passcode?
+                <KeyRound size={14} className="mr-1" /> Back to passcode sign-in
               </Button>
             </>
           )}
@@ -310,7 +400,7 @@ function AdminLogin() {
                 variant="outline"
                 size="sm"
                 disabled={busy}
-                onClick={sendOtpCode}
+                onClick={handleSendOtpCode}
                 className="flex items-center justify-center gap-2"
               >
                 <Mail size={14} /> Resend confirmation code
@@ -328,21 +418,6 @@ function AdminLogin() {
                 <KeyRound size={14} className="mr-1" /> Use passcode instead
               </Button>
             </>
-          )}
-
-          {mode === 'forgot' && (
-            <Button
-              type="button"
-              variant="link"
-              size="sm"
-              onClick={() => {
-                setMode('login');
-                setError('');
-                setMessage('');
-              }}
-            >
-              Back to sign in
-            </Button>
           )}
         </div>
 
