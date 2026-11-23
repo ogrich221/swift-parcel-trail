@@ -159,6 +159,10 @@ function AdminLogin() {
           });
         }
 
+        if (verifyResult.error) {
+          verifyResult = await supabase.auth.verifyOtp({email, token, type: 'signup'});
+        }
+
         if (verifyResult.error) throw new Error(mapOtpErrorMessage(verifyResult.error.message));
 
         const {data: master, error: roleError} = await supabase.rpc('is_master_admin');
