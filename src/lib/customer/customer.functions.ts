@@ -56,7 +56,7 @@ export const sendCustomerSupport = createServerFn({method: 'POST'}).middleware([
   return result.data;
 });
 export const updateCustomerNotification = createServerFn({method: 'POST'}).middleware([requireSupabaseAuth]).inputValidator((input: unknown) => z.object({id: z.string().uuid().nullable(), action: z.enum(['read','delete'])}).strict().parse(input)).handler(async ({context, data}) => {
-  const {error} = await context.supabase.rpc('manage_customer_notification', {p_id: data.id, p_action: data.action});
+  const {error} = await context.supabase.rpc('manage_customer_notification', {...(data.id ? {p_id: data.id} : {}), p_action: data.action});
   if (error) throw new Error('Notifications could not be updated.');
   return true;
 });

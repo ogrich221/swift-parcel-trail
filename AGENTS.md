@@ -43,7 +43,10 @@ use the editor.
 - Keep audit records append-only and update tracking through the transactional database function, so history corrections and current public status remain consistent.
 - Keep payment views read-only until a verified payment gateway is configured, and never equate shipping charges with received revenue.
 - Publish website content through separate draft/published fields and validate structured content before making it public; public reads must use the published-only database function, with direct table reads restricted to the master administrator so drafts remain private.
-- Store customer pictures and delivery proof in a private, master-only bucket; use short-lived signed links to inspect them.
+- Store delivery proof in the private master-only bucket and customer pictures in a private owner/master bucket; serve pictures through short-lived signed links so customer editing never exposes proof files.
 
 - Translate only public static interface text using bundled locale dictionaries; leave customer data and administrator pages untouched and preserve English form option values for stored requests.
 - Build the globe with browser-only dynamic Three.js imports and bundled geographic geometry, so no external map service or invented branch records are required.
+- Keep the customer workspace under the managed authenticated gate with a suspense query, active-account database checks and whitelisted profile RPCs; share operational tables and automatically refresh both workspaces so customer changes never create parallel shipment records.
+- Record only authenticated dashboard session visits as login history; never label historical visits as currently active sessions or expose authentication tokens.
+- Automatic administrator refreshes validate access without extending inactivity; only explicit operations renew activity so synchronisation cannot keep an unattended session alive.

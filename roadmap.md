@@ -1,7 +1,9 @@
 # Swift Delivery Express
-- [ ] Connect customer sign-in to a protected dashboard with overview, own shipments, tracking and history.
-- [ ] Add permitted profile editing, private pictures, notifications, support conversations and secure settings.
-- [ ] Enforce suspension and ownership, synchronise administrator changes, and verify customer flows on mobile and desktop.
+- [x] Connect customer sign-in to a protected dashboard with overview, own shipments, tracking and history.
+- [x] Add permitted profile editing, private pictures, notifications, support conversations and secure settings; verified profile/picture/support/preferences read-back with a temporary customer.
+- [x] Enforce suspension and ownership with PostgreSQL tests; automatically refresh both workspaces; verify eight account sections on desktop/phone and phone logout.
+- [ ] Verify customer/administrator shipment and reply updates end-to-end: awaits verified owner access and genuine operational shipment records.
+- [ ] Verify delivered password/email recovery and automated SMS: email inbox verification and an SMS provider are required; phone changes currently create company-verification requests.
 - [x] Fix only the two selected findings: deployed shipment and history reads require active customer status; PostgreSQL fixture tests verify unchanged-session suspension denial, owner isolation and master access. Live signed-in UI check unavailable.
 - [x] Confirm the sole owner email spelling as swiftdeliveryexpress4@gmail.com.
 - [x] Change the ceo 001 access email and database eligibility to swiftdeliveryexpress4@gmail.com; activation requires verification of the email.
@@ -24,6 +26,6 @@
 - [x] Design corporate website and all navigation pages.
 - [x] Connect tracking, customer accounts, booking, quotes and contact requests.
 - [x] Verify mobile layout, public request submissions, unknown tracking numbers and shipment privacy tests.
-- [ ] Verify signed-in booking and account flows: temporary test-account creation was declined.
+- [ ] Verify signed-in booking submission: customer dashboard flows verified, booking submission remains untested.
 - [ ] Verify positive operational tracking: awaiting actual company shipment records.
 - [ ] Official contact details, supported destinations and genuine reviews: awaiting owner information.

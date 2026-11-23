@@ -645,7 +645,7 @@ export type Database = {
       is_active_customer: { Args: never; Returns: boolean }
       is_master_admin: { Args: never; Returns: boolean }
       manage_customer_notification: {
-        Args: { p_action: string; p_id: string }
+        Args: { p_action?: string; p_id?: string }
         Returns: undefined
       }
       record_customer_session: {

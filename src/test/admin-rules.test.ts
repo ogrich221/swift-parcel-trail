@@ -1,8 +1,10 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {trackingInput,userInput,adminSettingsInput,financeTotals,exportCsv,siteContentSchema} from '@/lib/admin/schema';
+import {renewAdminActivity} from '@/lib/admin/session';
 const event={shipment_id:'fca0e4a9-b2a6-4d62-bb8c-e9c295e0da71',status:'Delivered',location:'Delivery address',description:'Recipient received the parcel.',occurred_at:'2026-01-01T12:00:00.000Z',delivery_verified:false};
 describe('administrator business safeguards',()=>{
+ it('does not renew administrator inactivity during passive customer synchronisation',()=>{expect(renewAdminActivity(false,true)).toBe(false);expect(renewAdminActivity(false,false)).toBe(true);expect(renewAdminActivity(true,true)).toBe(true);});
  it('requires verified delivery confirmation',()=>{expect(trackingInput.safeParse(event).success).toBe(false);expect(trackingInput.safeParse({...event,delivery_verified:true}).success).toBe(true);});
  it('rejects future tracking events',()=>{expect(trackingInput.safeParse({...event,delivery_verified:true,occurred_at:new Date(Date.now()+120000).toISOString()}).success).toBe(false);});
  it('allows exactly one master administrator role',()=>{const sql=readFileSync('drizzle/migrations/0001_master_admin_operations.sql','utf8');expect(sql).toContain("ENUM ('master_admin')");expect(sql).toContain('UNIQUE(role)');});

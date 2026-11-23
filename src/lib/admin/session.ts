@@ -1,0 +1,1 @@
+export function renewAdminActivity(login: boolean, passive: boolean) { return login || !passive; }
