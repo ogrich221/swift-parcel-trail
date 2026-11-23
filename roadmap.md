@@ -35,4 +35,5 @@
 
 - [x] Replace customer-account login wording with Login and remove the duplicate homepage sign-in link; preserve existing sign-in functionality.
 
-- [ ] Add shipment-level travel progress editing using the existing secured tracking updates; verify administrator save and public read-back.
+- [x] Add shipment-level travel progress editing using the existing secured tracking updates; existing tracking safeguards pass in all 59 tests.
+- [ ] Verify administrator travel progress save and public read-back: owner-session testing permission was declined.
