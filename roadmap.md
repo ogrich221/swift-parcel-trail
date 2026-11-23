@@ -1,4 +1,6 @@
 # Swift Delivery Express
+- [x] Rename sign-in to ceo 001, remove administrator wording and show passcode only; retain verified master authentication.
+- [ ] Set the requested ceo 001 credential: requires the owner to set it through the secure account recovery link; no credential is embedded in the website.
 - [x] Replace the homepage half-turn with slow, subtle left-to-right motion while preserving its layout and imagery.
 - [x] Cross-check every page on desktop and mobile: 58 loading checks passed; signed-in administrator screens remain unverified.
 - [x] Add a 180-degree homepage entrance and a logo-adjacent 15-language selector that translates public pages.
