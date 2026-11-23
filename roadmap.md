@@ -1,5 +1,5 @@
 # Swift Delivery Express
-- [ ] Confirm the latest owner email spelling: ogrichineed@gmail versus the previously confirmed ogrichindeed@gmail.com; hold further access changes until answered.
+- [x] Confirm the sole owner email spelling as ogrichindeed@gmail.com.
 - [x] Change the ceo 001 access email and database eligibility to ogrichindeed@gmail.com; activation requires verification of the new email.
 - [x] Remove the previous access email from current website configuration and copy without deleting account history.
 - [x] Add shared show/hide eyes to all customer and workspace password fields; customer sign-in/signup and ceo 001 sign-in verified, recovery and signed-in settings require valid owner sessions.
