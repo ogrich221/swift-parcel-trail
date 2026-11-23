@@ -8,10 +8,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { pageHead } from '@/lib/shipment';
 import { OpenAccountForm } from '@/components/open-account-form';
+import companyLogo from '@/assets/swift-company-logo.asset.json';
+import { User, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export const Route = createFileRoute('/auth')({
   validateSearch: z.object({
-    mode: z.enum(['login', 'signup', 'forgot']).optional()
+    mode: z.enum(['login', 'signup', 'forgot']).optional(),
+    redirect: z.string().optional()
   }),
   head: () =>
     pageHead(
@@ -22,7 +25,7 @@ export const Route = createFileRoute('/auth')({
 });
 
 function Auth() {
-  const { mode = 'login' } = Route.useSearch();
+  const { mode = 'login', redirect } = Route.useSearch();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -56,7 +59,14 @@ function Auth() {
         });
         if (err) throw err;
         setEmail(data.user?.email ?? '');
-        await navigate({ to: '/account/$section', params: { section: 'dashboard' } });
+        // Navigate directly to user profile as requested
+        if (redirect && redirect.startsWith('/account/')) {
+          const parts = redirect.split('/');
+          const targetSection = parts[2] ?? 'profile';
+          await navigate({ to: '/account/$section', params: { section: targetSection } });
+        } else {
+          await navigate({ to: '/account/$section', params: { section: 'profile' } });
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not complete this request. Please try again.');
@@ -78,7 +88,7 @@ function Auth() {
           data: { user }
         } = await supabase.auth.getUser();
         setEmail(user?.email ?? '');
-        await navigate({ to: '/account/$section', params: { section: 'dashboard' } });
+        await navigate({ to: '/account/$section', params: { section: 'profile' } });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign-in could not be completed.');
@@ -89,23 +99,42 @@ function Auth() {
 
   if (email) {
     return (
-      <section className="auth-layout">
-        <h1>Your customer account.</h1>
-        <p>Signed in as {email}</p>
-        <Button asChild variant="premium" className="mb-5">
-          <Link to="/account/$section" params={{ section: 'dashboard' }}>
-            Open Dashboard
-          </Link>
-        </Button>
-        <Button
-          variant="outline"
-          onClick={async () => {
-            await supabase.auth.signOut();
-            setEmail('');
-          }}
-        >
-          Sign out
-        </Button>
+      <section className="py-16 px-4">
+        <div className="max-w-md mx-auto text-center open-account-card p-8 rounded-2xl border border-white/40 shadow-xl bg-white/80 backdrop-blur-md">
+          <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 border border-primary/20 shadow-xs">
+            <User size={26} />
+          </div>
+          <div className="text-[10px] tracking-widest font-bold text-primary uppercase mb-1">
+            Swift Delivery Express
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Customer Account</h1>
+          <p className="text-sm text-slate-600 mb-6">
+            Signed in as <strong className="text-slate-900 font-semibold">{email}</strong>
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <Button asChild variant="premium" className="w-full h-11 font-semibold shadow-xs">
+              <Link to="/account/$section" params={{ section: 'profile' }}>
+                Go to My Profile <ArrowRight size={16} className="ml-1.5" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full h-11 border-slate-300 font-semibold">
+              <Link to="/account/$section" params={{ section: 'dashboard' }}>
+                Open Account Dashboard
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              className="text-slate-500 hover:text-destructive text-xs mt-2"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setEmail('');
+              }}
+            >
+              Sign out
+            </Button>
+          </div>
+        </div>
       </section>
     );
   }
@@ -122,12 +151,16 @@ function Auth() {
   // LOGIN AND FORGOT PASSWORD
   return (
     <section className="auth-layout">
-      <div className="eyebrow">SWIFT DELIVERY EXPRESS</div>
-      <h1>{mode === 'forgot' ? 'Forgot your password?' : 'Welcome back.'}</h1>
+      <div className="open-account-badge mb-3">
+        <span className="open-account-badge-dot" />
+        <img src={companyLogo.url} alt="Swift Delivery Express" className="h-4 w-auto brightness-95" />
+        <span>CUSTOMER PORTAL</span>
+      </div>
+      <h1>{mode === 'forgot' ? 'Forgot your password?' : 'Customer Account Login'}</h1>
       <p>
         {mode === 'forgot'
           ? 'Enter your email to request a secure reset link.'
-          : 'Sign in to start your next delivery and view shipments.'}
+          : 'Sign in to access your customer profile, view live shipments, and track deliveries.'}
       </p>
 
       <form className="auth-form" onSubmit={submit}>
@@ -161,7 +194,7 @@ function Auth() {
         )}
 
         <Button disabled={busy} variant="premium">
-          {busy ? 'Please wait…' : mode === 'forgot' ? 'Send Reset Link' : 'Sign In'}
+          {busy ? 'Signing in…' : mode === 'forgot' ? 'Send Reset Link' : 'Sign In to Profile'}
         </Button>
       </form>
 
