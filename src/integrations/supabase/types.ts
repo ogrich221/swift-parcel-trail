@@ -604,6 +604,7 @@ export type Database = {
         Returns: string
       }
       get_published_website_content: { Args: never; Returns: Json }
+      is_active_customer: { Args: never; Returns: boolean }
       is_master_admin: { Args: never; Returns: boolean }
       track_shipment: { Args: { p_tracking_id: string }; Returns: Json }
     }
