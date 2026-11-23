@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION public.create_customer_profile() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$ BEGIN IF lower(NEW.email)='ogrichindeed@gmail.com' THEN RETURN NEW; END IF; INSERT INTO public.profiles(id) VALUES(NEW.id) ON CONFLICT(id) DO NOTHING; RETURN NEW; END $$;

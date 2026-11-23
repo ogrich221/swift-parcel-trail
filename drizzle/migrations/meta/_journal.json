@@ -99,6 +99,13 @@
       "when": 1795440423501,
       "tag": "0013_ceo_access_email_ogrichindeed",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1795440813909,
+      "tag": "0014_admin_without_customer_profile",
+      "breakpoints": true
     }
   ]
 }
