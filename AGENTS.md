@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep shared navigation and footer in the root shell and content in distinct public TanStack routes, so every page has a shareable URL and its own metadata.
+- Use browser Cloud clients with RLS for requests and accounts; tracking uses an exact-ID database function that projects only public shipment fields, so identities stay private.
+- Separate booking requests from operational shipments; only company-created shipment records can produce tracking results, so unconfirmed customer requests never masquerade as real deliveries.
+- Keep profile-free accounts and save only submitted request details; customer identity comes from verified Cloud Auth sessions.

@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795429627376,
+      "tag": "0000_courier_requests_and_tracking",
+      "breakpoints": true
+    }
+  ]
+}

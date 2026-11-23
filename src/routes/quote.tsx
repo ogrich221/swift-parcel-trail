@@ -1,0 +1,5 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { pageHead } from '@/lib/shipment';
+import { RequestForm } from '@/components/request-form';
+export const Route=createFileRoute('/quote')({head:()=>pageHead('Get a shipping quote','Request a tailored quote for your delivery route, parcel weight and shipping requirements.'),component:Quote});
+function Quote(){return <><section className="page-banner"><div className="container"><div className="eyebrow">THE RIGHT SOLUTION. THE RIGHT FIT.</div><h1>Let’s get your shipment moving.</h1><p>Tell us about your parcel and delivery route. Request a personalised quote with service availability confirmed for your shipment.</p></div></section><section className="container page-body contact-grid"><div><h2>A quote tailored to you.</h2><p>Rates and delivery times depend on the service, parcel size, weight and destination. We don’t estimate prices until your details have been reviewed.</p><p>A quote request does not confirm a booking or charge your account.</p></div><RequestForm kind="quote"/></section></>}
