@@ -38,6 +38,7 @@ use the editor.
 - Use a distinct client-only admin layout with every data handler independently validating the database master role and inactivity session; the layout never grants server access.
 - Passcode-only administrator sign-in uses the existing master email as an implicit Auth identifier; passwords remain user-entered and Cloud-verified, never embedded in source or used as a role bypass.
 - Owner email changes update both implicit sign-in and database eligibility; grant or transfer the single role only after the replacement email is verified, preserving account and audit history.
+- Test shipment suspension policies with isolated PostgreSQL fixtures and the actual migration SQL; never change live customer status to run security regressions.
 - Use the shared PasswordInput for password and passcode fields so visibility toggles never submit forms or change entered credentials.
 - Keep audit records append-only and update tracking through the transactional database function, so history corrections and current public status remain consistent.
 - Keep payment views read-only until a verified payment gateway is configured, and never equate shipping charges with received revenue.

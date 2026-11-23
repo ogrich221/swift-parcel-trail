@@ -1,0 +1,2 @@
+ALTER POLICY "Owners read private shipment details" ON public.shipments TO authenticated USING (user_id = auth.uid() AND public.is_active_customer());
+ALTER POLICY "Owners read shipment events" ON public.shipment_events TO authenticated USING (public.is_active_customer() AND EXISTS (SELECT 1 FROM public.shipments s WHERE s.id = shipment_events.shipment_id AND s.user_id = auth.uid()));

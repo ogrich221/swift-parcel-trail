@@ -1,4 +1,5 @@
 # Swift Delivery Express
+- [x] Fix only the two selected findings: deployed shipment and history reads require active customer status; PostgreSQL fixture tests verify unchanged-session suspension denial, owner isolation and master access. Live signed-in UI check unavailable.
 - [x] Confirm the sole owner email spelling as ogrichindeed@gmail.com.
 - [x] Change the ceo 001 access email and database eligibility to ogrichindeed@gmail.com; activation requires verification of the new email.
 - [x] Remove the previous access email from current website configuration and copy without deleting account history.
