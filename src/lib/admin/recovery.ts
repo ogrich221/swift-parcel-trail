@@ -34,18 +34,14 @@ export function mapOtpErrorMessage(rawMessage: string): string {
 export async function sendAdminRecoveryCode(origin?: string): Promise<{email: string; message: string}> {
   const redirectTo = origin ? `${origin}/admin/login` : undefined;
 
-  // Dispatch password recovery OTP
-  const {error: recoveryErr} = await supabase.auth.resetPasswordForEmail(masterAdminEmail, redirectTo ? {redirectTo} : {});
-
-  if (recoveryErr) {
-    // If resetPasswordForEmail fails (e.g. rate limit), also attempt OTP sign-in code
-    const {error: otpErr} = await supabase.auth.signInWithOtp({
-      email: masterAdminEmail,
-      options: redirectTo ? {emailRedirectTo: redirectTo} : {}
-    });
-    if (otpErr) {
-      throw recoveryErr || otpErr;
-    }
+  // One-time email code; creates the owner account on first use so the code always arrives.
+  const {error: otpErr} = await supabase.auth.signInWithOtp({
+    email: masterAdminEmail,
+    options: redirectTo ? {emailRedirectTo: redirectTo, shouldCreateUser: true} : {shouldCreateUser: true}
+  });
+  if (otpErr) {
+    const {error: recoveryErr} = await supabase.auth.resetPasswordForEmail(masterAdminEmail, redirectTo ? {redirectTo} : {});
+    if (recoveryErr) throw otpErr;
   }
 
   return {
@@ -64,24 +60,13 @@ export async function verifyAdminRecoveryCode(token: string): Promise<boolean> {
     throw new Error('Please enter the one-time verification code sent to your email.');
   }
 
-  let {error} = await supabase.auth.verifyOtp({
-    email: masterAdminEmail,
-    token: cleanToken,
-    type: 'recovery'
-  });
-
-  if (error) {
-    const fallback = await supabase.auth.verifyOtp({
-      email: masterAdminEmail,
-      token: cleanToken,
-      type: 'email'
-    });
-    if (fallback.error) {
-      throw new Error(mapOtpErrorMessage(error.message || fallback.error.message));
-    }
+  let lastError = '';
+  for (const type of ['email', 'signup', 'recovery'] as const) {
+    const {error} = await supabase.auth.verifyOtp({email: masterAdminEmail, token: cleanToken, type});
+    if (!error) return true;
+    lastError = error.message;
   }
-
-  return true;
+  throw new Error(mapOtpErrorMessage(lastError));
 }
 
 /**
