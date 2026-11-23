@@ -33,7 +33,7 @@ export function mapOtpErrorMessage(rawMessage: string): string {
  */
 export async function sendAdminRecoveryCode(origin?: string): Promise<{email: string; message: string}> {
   const redirectTo = origin ? `${origin}/admin/login` : undefined;
-  
+
   // Dispatch password recovery OTP
   const {error: recoveryErr} = await supabase.auth.resetPasswordForEmail(masterAdminEmail, {
     redirectTo
@@ -59,6 +59,54 @@ export async function sendAdminRecoveryCode(origin?: string): Promise<{email: st
 }
 
 /**
+ * Verifies the single-use recovery code against Supabase Auth.
+ * Invalidates the single-use token and establishes the recovery session.
+ */
+export async function verifyAdminRecoveryCode(token: string): Promise<boolean> {
+  const cleanToken = token.trim();
+  if (!cleanToken) {
+    throw new Error('Please enter the one-time verification code sent to your email.');
+  }
+
+  let {error} = await supabase.auth.verifyOtp({
+    email: masterAdminEmail,
+    token: cleanToken,
+    type: 'recovery'
+  });
+
+  if (error) {
+    const fallback = await supabase.auth.verifyOtp({
+      email: masterAdminEmail,
+      token: cleanToken,
+      type: 'email'
+    });
+    if (fallback.error) {
+      throw new Error(mapOtpErrorMessage(error.message || fallback.error.message));
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Validates, saves the new admin passcode, and ensures the user has master admin rights.
+ */
+export async function updateAdminPasscode(password: string, confirm: string): Promise<boolean> {
+  validatePasscodePair(password, confirm);
+
+  const {error: updateErr} = await supabase.auth.updateUser({password});
+  if (updateErr) throw updateErr;
+
+  const {data: isMaster, error: roleError} = await supabase.rpc('is_master_admin');
+  if (roleError || !isMaster) {
+    await supabase.auth.signOut();
+    throw new Error('Access is not authorised for this workspace.');
+  }
+
+  return true;
+}
+
+/**
  * Verifies the single-use recovery code, updates the admin passcode,
  * and confirms master admin status.
  */
@@ -71,41 +119,8 @@ export async function verifyRecoveryCodeAndResetPasscode({
   validatePasscodePair(password, confirm);
 
   if (!hasActiveSession) {
-    const cleanToken = token.trim();
-    if (!cleanToken) {
-      throw new Error('Please enter the one-time verification code sent to your email.');
-    }
-
-    // Attempt recovery type first
-    let {error} = await supabase.auth.verifyOtp({
-      email: masterAdminEmail,
-      token: cleanToken,
-      type: 'recovery'
-    });
-
-    // Fall back to email OTP if sent via signInWithOtp
-    if (error) {
-      const fallback = await supabase.auth.verifyOtp({
-        email: masterAdminEmail,
-        token: cleanToken,
-        type: 'email'
-      });
-      if (fallback.error) {
-        throw new Error(mapOtpErrorMessage(error.message || fallback.error.message));
-      }
-    }
+    await verifyAdminRecoveryCode(token);
   }
 
-  // Update passcode
-  const {error: updateErr} = await supabase.auth.updateUser({password});
-  if (updateErr) throw updateErr;
-
-  // Confirm authorization
-  const {data: isMaster, error: roleError} = await supabase.rpc('is_master_admin');
-  if (roleError || !isMaster) {
-    await supabase.auth.signOut();
-    throw new Error('Access is not authorised for this workspace.');
-  }
-
-  return true;
+  return updateAdminPasscode(password, confirm);
 }

@@ -3,6 +3,8 @@ import {adminCredentials, masterAdminEmail} from '@/lib/admin/login';
 import {
   validatePasscodePair,
   mapOtpErrorMessage,
+  verifyAdminRecoveryCode,
+  updateAdminPasscode,
   RECOVERY_EXPIRY_MINUTES
 } from '@/lib/admin/recovery';
 
@@ -27,6 +29,16 @@ describe('secure admin login recovery', () => {
     expect(() => validatePasscodePair('short', 'short')).toThrow('at least 8 characters');
     expect(() => validatePasscodePair('securePasscode1', 'differentPasscode2')).toThrow('do not match');
     expect(() => validatePasscodePair('validPasscode123', 'validPasscode123')).not.toThrow();
+  });
+
+  it('requires empty tokens to be rejected before attempting verification', async () => {
+    await expect(verifyAdminRecoveryCode('')).rejects.toThrow('Please enter the one-time verification code');
+    await expect(verifyAdminRecoveryCode('   ')).rejects.toThrow('Please enter the one-time verification code');
+  });
+
+  it('requires passcode validation before updating credentials', async () => {
+    await expect(updateAdminPasscode('short', 'short')).rejects.toThrow('at least 8 characters');
+    await expect(updateAdminPasscode('newPassword1', 'mismatchedPass2')).rejects.toThrow('do not match');
   });
 
   it('maps expired or already-used OTP errors to a clear security message', () => {
