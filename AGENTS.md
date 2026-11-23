@@ -38,7 +38,7 @@ use the editor.
 - Use a distinct client-only admin layout with every data handler independently validating the database master role and inactivity session; the layout never grants server access.
 - Keep audit records append-only and update tracking through the transactional database function, so history corrections and current public status remain consistent.
 - Keep payment views read-only until a verified payment gateway is configured, and never equate shipping charges with received revenue.
-- Publish website content through separate draft/published fields and validate structured content before making it public.
+- Publish website content through separate draft/published fields and validate structured content before making it public; public reads must use the published-only database function, with direct table reads restricted to the master administrator so drafts remain private.
 - Store customer pictures and delivery proof in a private, master-only bucket; use short-lived signed links to inspect them.
 
 - Translate only public static interface text using bundled locale dictionaries; leave customer data and administrator pages untouched and preserve English form option values for stored requests.

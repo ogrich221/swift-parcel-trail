@@ -36,6 +36,13 @@
       "when": 1795431035379,
       "tag": "0004_private_admin_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795431935362,
+      "tag": "0005_protect_website_drafts",
+      "breakpoints": true
     }
   ]
 }
