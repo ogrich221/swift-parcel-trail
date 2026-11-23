@@ -14,6 +14,316 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_activity: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json
+          entity_id: string | null
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      admin_sessions: {
+        Row: {
+          ended_at: string | null
+          last_seen: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          ended_at?: string | null
+          last_seen?: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          ended_at?: string | null
+          last_seen?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          currency: string
+          id: boolean
+          idle_minutes: number
+          notification_preferences: Json
+          require_mfa: boolean
+          timezone: string
+          updated_by: string | null
+        }
+        Insert: {
+          currency?: string
+          id?: boolean
+          idle_minutes?: number
+          notification_preferences?: Json
+          require_mfa?: boolean
+          timezone?: string
+          updated_by?: string | null
+        }
+        Update: {
+          currency?: string
+          id?: boolean
+          idle_minutes?: number
+          notification_preferences?: Json
+          require_mfa?: boolean
+          timezone?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      customer_notifications: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          shipment_id: string | null
+          title: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          message: string
+          read_at?: string | null
+          shipment_id?: string | null
+          title: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          read_at?: string | null
+          shipment_id?: string | null
+          title?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_notifications_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_assignments: {
+        Row: {
+          created_at: string
+          driver_id: string
+          id: string
+          notes: string
+          shipment_id: string
+          status: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          driver_id: string
+          id?: string
+          notes?: string
+          shipment_id: string
+          status?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string
+          id?: string
+          notes?: string
+          shipment_id?: string
+          status?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_assignments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_personnel"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_assignments_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_personnel: {
+        Row: {
+          active: boolean
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          updated_by: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string
+          updated_by?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      master_admin_reservation: {
+        Row: {
+          email: string
+          id: boolean
+        }
+        Insert: {
+          email?: string
+          id?: boolean
+        }
+        Update: {
+          email?: string
+          id?: boolean
+        }
+        Relationships: []
+      }
+      payment_records: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          provider: string
+          provider_reference: string
+          shipment_id: string | null
+          status: string
+          verified_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency: string
+          id?: string
+          provider: string
+          provider_reference: string
+          shipment_id?: string | null
+          status: string
+          verified_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          provider?: string
+          provider_reference?: string
+          shipment_id?: string | null
+          status?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_records_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          account_status: string
+          address: string
+          avatar_path: string
+          city: string
+          country: string
+          created_at: string
+          customer_id: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string
+          state: string
+          suspension_reason: string
+          updated_by: string | null
+        }
+        Insert: {
+          account_status?: string
+          address?: string
+          avatar_path?: string
+          city?: string
+          country?: string
+          created_at?: string
+          customer_id?: string
+          first_name?: string
+          id: string
+          last_name?: string
+          phone?: string
+          state?: string
+          suspension_reason?: string
+          updated_by?: string | null
+        }
+        Update: {
+          account_status?: string
+          address?: string
+          avatar_path?: string
+          city?: string
+          country?: string
+          created_at?: string
+          customer_id?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string
+          state?: string
+          suspension_reason?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           created_at: string
@@ -25,6 +335,7 @@ export type Database = {
           phone: string
           status: string
           subject: string
+          updated_by: string | null
           user_id: string | null
         }
         Insert: {
@@ -37,6 +348,7 @@ export type Database = {
           phone?: string
           status?: string
           subject?: string
+          updated_by?: string | null
           user_id?: string | null
         }
         Update: {
@@ -49,34 +361,44 @@ export type Database = {
           phone?: string
           status?: string
           subject?: string
+          updated_by?: string | null
           user_id?: string | null
         }
         Relationships: []
       }
       shipment_events: {
         Row: {
+          delivery_verified: boolean
           description: string
           id: string
           location: string
           occurred_at: string
+          proof_path: string | null
           shipment_id: string
           status: string
+          updated_by: string | null
         }
         Insert: {
+          delivery_verified?: boolean
           description?: string
           id?: string
           location: string
           occurred_at?: string
+          proof_path?: string | null
           shipment_id: string
           status: string
+          updated_by?: string | null
         }
         Update: {
+          delivery_verified?: boolean
           description?: string
           id?: string
           location?: string
           occurred_at?: string
+          proof_path?: string | null
           shipment_id?: string
           status?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -90,43 +412,174 @@ export type Database = {
       }
       shipments: {
         Row: {
+          cancelled_at: string | null
           created_at: string
+          currency: string
           destination: string
           estimated_delivery: string | null
           id: string
           latest_location: string | null
           origin: string
+          parcel_description: string
+          parcel_weight: number
+          recipient_address: string
+          recipient_city: string
+          recipient_country: string
+          recipient_email: string
           recipient_name: string | null
+          recipient_phone: string
+          recipient_state: string
+          sender_address: string
+          sender_city: string
+          sender_country: string
+          sender_email: string
           sender_name: string | null
+          sender_phone: string
+          sender_state: string
+          shipment_type: string
+          shipping_cost: number
           status: string
           tracking_id: string
+          updated_by: string | null
           user_id: string | null
         }
         Insert: {
+          cancelled_at?: string | null
           created_at?: string
+          currency?: string
           destination: string
           estimated_delivery?: string | null
           id?: string
           latest_location?: string | null
           origin: string
+          parcel_description?: string
+          parcel_weight?: number
+          recipient_address?: string
+          recipient_city?: string
+          recipient_country?: string
+          recipient_email?: string
           recipient_name?: string | null
+          recipient_phone?: string
+          recipient_state?: string
+          sender_address?: string
+          sender_city?: string
+          sender_country?: string
+          sender_email?: string
           sender_name?: string | null
+          sender_phone?: string
+          sender_state?: string
+          shipment_type?: string
+          shipping_cost?: number
           status?: string
           tracking_id?: string
+          updated_by?: string | null
           user_id?: string | null
         }
         Update: {
+          cancelled_at?: string | null
           created_at?: string
+          currency?: string
           destination?: string
           estimated_delivery?: string | null
           id?: string
           latest_location?: string | null
           origin?: string
+          parcel_description?: string
+          parcel_weight?: number
+          recipient_address?: string
+          recipient_city?: string
+          recipient_country?: string
+          recipient_email?: string
           recipient_name?: string | null
+          recipient_phone?: string
+          recipient_state?: string
+          sender_address?: string
+          sender_city?: string
+          sender_country?: string
+          sender_email?: string
           sender_name?: string | null
+          sender_phone?: string
+          sender_state?: string
+          shipment_type?: string
+          shipping_cost?: number
           status?: string
           tracking_id?: string
+          updated_by?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      support_replies: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          request_id: string
+          updated_by: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          request_id: string
+          updated_by: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          request_id?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_replies_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      website_content: {
+        Row: {
+          draft: Json
+          id: boolean
+          published: Json
+          published_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          draft?: Json
+          id?: boolean
+          published?: Json
+          published_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          draft?: Json
+          id?: boolean
+          published?: Json
+          published_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -135,10 +588,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_operational_stats: { Args: never; Returns: Json }
+      admin_tracking_event: {
+        Args: {
+          p_actor: string
+          p_description: string
+          p_event_id?: string
+          p_location: string
+          p_occurred_at: string
+          p_proof_path?: string
+          p_shipment_id: string
+          p_status: string
+          p_verified: boolean
+        }
+        Returns: string
+      }
+      is_master_admin: { Args: never; Returns: boolean }
       track_shipment: { Args: { p_tracking_id: string }; Returns: Json }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "master_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -265,6 +734,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["master_admin"],
+    },
   },
 } as const

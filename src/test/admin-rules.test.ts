@@ -1,0 +1,16 @@
+import {describe,it,expect} from 'vitest';
+import {readFileSync} from 'node:fs';
+import {trackingInput,userInput,adminSettingsInput,financeTotals,exportCsv,siteContentSchema} from '@/lib/admin/schema';
+const event={shipment_id:'fca0e4a9-b2a6-4d62-bb8c-e9c295e0da71',status:'Delivered',location:'Delivery address',description:'Recipient received the parcel.',occurred_at:'2026-01-01T12:00:00.000Z',delivery_verified:false};
+describe('administrator business safeguards',()=>{
+ it('requires verified delivery confirmation',()=>{expect(trackingInput.safeParse(event).success).toBe(false);expect(trackingInput.safeParse({...event,delivery_verified:true}).success).toBe(true);});
+ it('rejects future tracking events',()=>{expect(trackingInput.safeParse({...event,delivery_verified:true,occurred_at:new Date(Date.now()+120000).toISOString()}).success).toBe(false);});
+ it('allows exactly one master administrator role',()=>{const sql=readFileSync('drizzle/migrations/0001_master_admin_operations.sql','utf8');expect(sql).toContain("ENUM ('master_admin')");expect(sql).toContain('UNIQUE(role)');});
+ it('reserves master access for the exact owner email and requires verification',()=>{const sql=readFileSync('drizzle/migrations/0002_verified_master_assignment.sql','utf8');expect(sql).toContain("lower(NEW.email)='swiftdeliveryexpress4@gmail.com'");expect(sql).toContain('NEW.email_confirmed_at IS NOT NULL');});
+ it('makes audit records immutable',()=>{const sql=readFileSync('drizzle/migrations/0001_master_admin_operations.sql','utf8');expect(sql).toContain('BEFORE UPDATE OR DELETE ON public.admin_activity');expect(sql).toContain("RAISE EXCEPTION 'Audit records are immutable'");});
+ it('requires a suspension reason',()=>{expect(userInput.safeParse({email:'person@example.com',first_name:'Test',last_name:'Customer',phone:'',address:'',city:'',state:'',country:'',account_status:'suspended',suspension_reason:''}).success).toBe(false);});
+ it('enforces configurable inactivity between 5 and 120 minutes',()=>{expect(adminSettingsInput.safeParse({currency:'USD',timezone:'UTC',idle_minutes:4,require_mfa:false}).success).toBe(false);expect(adminSettingsInput.safeParse({currency:'USD',timezone:'UTC',idle_minutes:121,require_mfa:false}).success).toBe(false);expect(adminSettingsInput.safeParse({currency:'USD',timezone:'UTC',idle_minutes:30,require_mfa:false}).success).toBe(true);});
+ it('counts revenue only from genuine verified payments in the selected currency',()=>{expect(financeTotals([{amount:50,currency:'USD',status:'paid',verified_at:'2026-01-01'},{amount:500,currency:'USD',status:'paid',verified_at:null},{amount:75,currency:'EUR',status:'paid',verified_at:'2026-01-01'},{amount:100,currency:'USD',status:'refunded',verified_at:'2026-01-01'}],'USD')).toBe(50);});
+ it('allows only verified testimonials to be published',()=>{expect(siteContentSchema.safeParse({testimonials:[{name:'Person',location:'City',rating:5,review:'A review',verified:false}]}).success).toBe(false);});
+ it('prevents spreadsheet formula execution in exports',()=>{expect(exportCsv([{name:'=HYPERLINK("bad")'}])).toContain("'=HYPERLINK");});
+});

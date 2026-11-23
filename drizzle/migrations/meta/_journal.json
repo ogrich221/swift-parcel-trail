@@ -8,6 +8,34 @@
       "when": 1795429627376,
       "tag": "0000_courier_requests_and_tracking",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795430094160,
+      "tag": "0001_master_admin_operations",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795430139270,
+      "tag": "0002_verified_master_assignment",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795430219053,
+      "tag": "0003_operational_statistics",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795431035379,
+      "tag": "0004_private_admin_documents",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+CREATE POLICY "Master uploads private documents" ON storage.objects FOR INSERT TO authenticated WITH CHECK(bucket_id='admin-documents' AND public.is_master_admin()); CREATE POLICY "Master reads private documents" ON storage.objects FOR SELECT TO authenticated USING(bucket_id='admin-documents' AND public.is_master_admin());

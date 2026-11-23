@@ -1,4 +1,12 @@
 # Swift Delivery Express
+- [x] Add light-gold glass homepage theme, mobile refinement, company-logo page loading screen and company favicon.
+- [x] Improve the company logo and remove transport-image watermark overlays and the published Lovable badge.
+- [x] Extend homepage with branded ship, air freight, home-to-home, bike and truck photographs and safety quotes; retain flat styling.
+- [x] Build separate flat glass-style master administrator dashboard with all management sections.
+- [x] Add single-master access controls, live operational data, audited mutations, private uploads and exports.
+- [ ] Verify signed-in administrator workflows and public tracking synchronisation: invitation must be accepted by the owner; signed-out access denial and 17 safety tests passed.
+- [ ] Activate master account: secure invitation sent to swiftdeliveryexpress4@gmail.com; access automatically assigned only after email verification.
+- [ ] Configure service email and payment refunds: requires verified sender domain and payment gateway.
 - [x] Design corporate website and all navigation pages.
 - [x] Connect tracking, customer accounts, booking, quotes and contact requests.
 - [x] Verify mobile layout, public request submissions, unknown tracking numbers and shipment privacy tests.

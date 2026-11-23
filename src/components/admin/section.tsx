@@ -1,0 +1,5 @@
+import {UsersPage,ShipmentsPage,TrackingPage} from './management';
+import {OperationsPage,PaymentsPage,SupportPage,NotificationsPage,ActivityPage} from './operations';
+import {WebsitePage,ReportsPage,SettingsPage} from './configuration';
+import {Empty} from './common';
+export function AdminSection({section,action,q}:{section:string;action?:string|undefined;q?:string|undefined}){const props={...(action?{initialAction:action}:{}),...(q?{initialQuery:q}:{})};switch(section){case 'users':return <UsersPage {...props}/>;case 'shipments':return <ShipmentsPage {...props}/>;case 'tracking':return <TrackingPage {...props}/>;case 'operations':return <OperationsPage/>;case 'payments':return <PaymentsPage/>;case 'support':return <SupportPage/>;case 'notifications':return <NotificationsPage/>;case 'activity':return <ActivityPage/>;case 'website':return <WebsitePage/>;case 'reports':return <ReportsPage/>;case 'settings':return <SettingsPage/>;default:return <Empty title="Administrator section not found"/>;}}

@@ -6,10 +6,13 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { BrandLoading, PageLoadingScreen } from "@/components/brand-loading";
+import { PublicContentProvider, PublicAnnouncements } from "@/lib/public-content";
 import { Header, Footer } from "@/components/site";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -99,9 +102,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
+  pendingComponent: BrandLoading,
+  pendingMs: 0,
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -125,8 +130,17 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const { pathname } = useLocation();
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(event => {
+      const inviteType = new URLSearchParams(window.location.hash.slice(1)).get("type");
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "PASSWORD_RECOVERY") && (inviteType === "invite" || inviteType === "recovery") && window.location.pathname === "/") {
+        window.setTimeout(() => { void supabase.rpc("is_master_admin").then(({ data }) => {
+          if (data) void router.navigate({ to: "/admin/login", hash: "type=" + inviteType });
+          else void router.navigate({ to: "/reset-password", hash: "type=" + inviteType });
+        }); }, 0);
+      }
       if (!["SIGNED_IN", "SIGNED_OUT", "USER_UPDATED"].includes(event)) return;
       void router.invalidate();
       if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
@@ -137,9 +151,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Header />
-      <main><Outlet /></main>
-      <Footer />
+      {isAdmin ? <Outlet /> : <PublicContentProvider><Header /><PublicAnnouncements /><main><Outlet /></main><Footer /></PublicContentProvider>}
+      <PageLoadingScreen />
       <Toaster />
     </QueryClientProvider>
   );

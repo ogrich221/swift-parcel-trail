@@ -33,4 +33,10 @@ use the editor.
 - Keep shared navigation and footer in the root shell and content in distinct public TanStack routes, so every page has a shareable URL and its own metadata.
 - Use browser Cloud clients with RLS for requests and accounts; tracking uses an exact-ID database function that projects only public shipment fields, so identities stay private.
 - Separate booking requests from operational shipments; only company-created shipment records can produce tracking results, so unconfirmed customer requests never masquerade as real deliveries.
-- Keep profile-free accounts and save only submitted request details; customer identity comes from verified Cloud Auth sessions.
+- Keep public signup email/password-only; administrator-managed contact profiles are stored separately, and customer identity comes from verified Cloud Auth sessions.
+
+- Use a distinct client-only admin layout with every data handler independently validating the database master role and inactivity session; the layout never grants server access.
+- Keep audit records append-only and update tracking through the transactional database function, so history corrections and current public status remain consistent.
+- Keep payment views read-only until a verified payment gateway is configured, and never equate shipping charges with received revenue.
+- Publish website content through separate draft/published fields and validate structured content before making it public.
+- Store customer pictures and delivery proof in a private, master-only bucket; use short-lived signed links to inspect them.
