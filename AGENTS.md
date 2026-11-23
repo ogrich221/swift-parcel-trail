@@ -40,3 +40,6 @@ use the editor.
 - Keep payment views read-only until a verified payment gateway is configured, and never equate shipping charges with received revenue.
 - Publish website content through separate draft/published fields and validate structured content before making it public.
 - Store customer pictures and delivery proof in a private, master-only bucket; use short-lived signed links to inspect them.
+
+- Translate only public static interface text using bundled locale dictionaries; leave customer data and administrator pages untouched and preserve English form option values for stored requests.
+- Build the globe with browser-only dynamic Three.js imports and bundled geographic geometry, so no external map service or invented branch records are required.

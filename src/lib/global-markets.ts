@@ -1,0 +1,17 @@
+export const globalMarkets=[
+ {city:'New York',country:'United States',region:'Americas',lat:40.7128,lon:-74.006},
+ {city:'Toronto',country:'Canada',region:'Americas',lat:43.6532,lon:-79.3832},
+ {city:'Mexico City',country:'Mexico',region:'Americas',lat:19.4326,lon:-99.1332},
+ {city:'São Paulo',country:'Brazil',region:'Americas',lat:-23.5505,lon:-46.6333},
+ {city:'London',country:'United Kingdom',region:'Europe',lat:51.5074,lon:-.1278},
+ {city:'Paris',country:'France',region:'Europe',lat:48.8566,lon:2.3522},
+ {city:'Frankfurt',country:'Germany',region:'Europe',lat:50.1109,lon:8.6821},
+ {city:'Milan',country:'Italy',region:'Europe',lat:45.4642,lon:9.19},
+ {city:'Madrid',country:'Spain',region:'Europe',lat:40.4168,lon:-3.7038},
+ {city:'Tokyo',country:'Japan',region:'Asia',lat:35.6762,lon:139.6503},
+ {city:'Shanghai',country:'China',region:'Asia',lat:31.2304,lon:121.4737},
+ {city:'Singapore',country:'Singapore',region:'Asia',lat:1.3521,lon:103.8198},
+ {city:'Seoul',country:'South Korea',region:'Asia',lat:37.5665,lon:126.978},
+ {city:'Mumbai',country:'India',region:'Asia',lat:19.076,lon:72.8777},
+ {city:'Sydney',country:'Australia',region:'Oceania',lat:-33.8688,lon:151.2093},
+] as const;

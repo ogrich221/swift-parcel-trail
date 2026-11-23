@@ -1,3 +1,4 @@
+import {LanguageProvider} from '@/lib/language-context';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -151,7 +152,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      {isAdmin ? <Outlet /> : <PublicContentProvider><Header /><PublicAnnouncements /><main><Outlet /></main><Footer /></PublicContentProvider>}
+      {isAdmin ? <Outlet /> : <LanguageProvider><PublicContentProvider><Header /><PublicAnnouncements /><main><Outlet /></main><Footer /></PublicContentProvider></LanguageProvider>}
       <PageLoadingScreen />
       <Toaster />
     </QueryClientProvider>

@@ -1,0 +1,7 @@
+import {useState} from 'react';
+import {Languages,Check,Loader2} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Popover,PopoverTrigger,PopoverContent} from '@/components/ui/popover';
+import {languages} from '@/lib/languages';
+import {useLanguage} from '@/lib/language-context';
+export function LanguageSelector(){const {language,busy,change}=useLanguage();const [open,setOpen]=useState(false);return <div data-no-translate className="language-selector"><Popover open={open} onOpenChange={setOpen}><PopoverTrigger asChild><Button variant="outline" size="icon" className="language-toggle" aria-label="Choose website language" title="Choose website language">{busy?<Loader2 className="animate-spin"/>:<Languages/>}<span>{language.toUpperCase()}</span></Button></PopoverTrigger><PopoverContent align="start" className="language-dashboard" data-no-translate><div className="language-dashboard-heading"><Languages/><strong>Language</strong><span>15</span></div><div className="language-grid">{languages.map(l=><Button key={l.code} variant={language===l.code?'secondary':'ghost'} disabled={busy} onClick={()=>{change(l.code);setOpen(false);}} lang={l.code} className="language-option"><span>{l.name}</span>{language===l.code&&<Check size={14}/>}</Button>)}</div></PopoverContent></Popover></div>}

@@ -1,4 +1,6 @@
 # Swift Delivery Express
+- [x] Add a 180-degree homepage entrance and a logo-adjacent 15-language selector that translates public pages.
+- [x] Exclude African languages from the selector; add an earth-coloured globe with blinking markers for 15 agent-selected major global markets outside Africa, labelled as selected markets rather than unverified branches.
 - [x] Add light-gold glass homepage theme, mobile refinement, company-logo page loading screen and company favicon.
 - [x] Improve the company logo and remove transport-image watermark overlays and the published Lovable badge.
 - [x] Extend homepage with branded ship, air freight, home-to-home, bike and truck photographs and safety quotes; retain flat styling.

@@ -1,0 +1,1 @@
+declare module 'world-atlas/land-110m.json' {const world:{objects:{land:unknown}};export default world;}

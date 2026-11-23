@@ -1,0 +1,5 @@
+import {describe,it,expect} from 'vitest';
+import {languages,isLanguageCode} from '@/lib/languages';
+import {globalMarkets} from '@/lib/global-markets';
+describe('Public languages',()=>{it('offers exactly 15 distinct languages',()=>{expect(languages).toHaveLength(15);expect(new Set(languages.map(l=>l.code)).size).toBe(15)});it('excludes African language options',()=>{for(const code of ['sw','af','am','ha','yo','ig','zu','xh','so'])expect(isLanguageCode(code)).toBe(false)});});
+describe('Selected global markets',()=>{it('contains exactly 15 cities in 15 countries',()=>{expect(globalMarkets).toHaveLength(15);expect(new Set(globalMarkets.map(m=>m.country)).size).toBe(15)});it('uses only non-African world regions',()=>{expect(globalMarkets.every(m=>['Americas','Europe','Asia','Oceania'].includes(m.region))).toBe(true)});});
