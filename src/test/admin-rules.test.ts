@@ -2,6 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {trackingInput,userInput,adminSettingsInput,financeTotals,exportCsv,siteContentSchema} from '@/lib/admin/schema';
 import {renewAdminActivity} from '@/lib/admin/session';
+import {isMasterAdminEmail} from '@/lib/admin/login';
 const event={shipment_id:'fca0e4a9-b2a6-4d62-bb8c-e9c295e0da71',status:'Delivered',location:'Delivery address',description:'Recipient received the parcel.',occurred_at:'2026-01-01T12:00:00.000Z',delivery_verified:false};
 describe('administrator business safeguards',()=>{
  it('does not renew administrator inactivity during passive customer synchronisation',()=>{expect(renewAdminActivity(false,true)).toBe(false);expect(renewAdminActivity(false,false)).toBe(true);expect(renewAdminActivity(true,true)).toBe(true);});
@@ -17,4 +18,5 @@ describe('administrator business safeguards',()=>{
  it('counts revenue only from genuine verified payments in the selected currency',()=>{expect(financeTotals([{amount:50,currency:'USD',status:'paid',verified_at:'2026-01-01'},{amount:500,currency:'USD',status:'paid',verified_at:null},{amount:75,currency:'EUR',status:'paid',verified_at:'2026-01-01'},{amount:100,currency:'USD',status:'refunded',verified_at:'2026-01-01'}],'USD')).toBe(50);});
  it('allows only verified testimonials to be published',()=>{expect(siteContentSchema.safeParse({testimonials:[{name:'Person',location:'City',rating:5,review:'A review',verified:false}]}).success).toBe(false);});
  it('prevents spreadsheet formula execution in exports',()=>{expect(exportCsv([{name:'=HYPERLINK("bad")'}])).toContain("'=HYPERLINK");});
+ it('identifies only the owner account as the administrator for public pages',()=>{expect(isMasterAdminEmail('OGRICHINDEED@gmail.com')).toBe(true);expect(isMasterAdminEmail('customer@example.com')).toBe(false);expect(isMasterAdminEmail(null)).toBe(false);expect(isMasterAdminEmail(undefined)).toBe(false);expect(isMasterAdminEmail('')).toBe(false);});
 });

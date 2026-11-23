@@ -31,3 +31,4 @@
 - [ ] Verify positive operational tracking: awaiting actual company shipment records.
 - [ ] Official contact details, supported destinations and genuine reviews: awaiting owner information.- [x] Connect Tawk.to live chat widget on public pages (not admin); sandbox browser blocks the external chat service, real-browser rendering unverified.
 - [x] Set +1 000 000 SED as the published contact phone number on the contact page.
+- [ ] Remove the admin dashboard route from the home page so the ceo 001 account gets no dashboard entry point there.
