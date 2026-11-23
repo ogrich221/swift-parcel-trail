@@ -1,4 +1,6 @@
 # Swift Delivery Express
+- [x] Replace the homepage half-turn with slow, subtle left-to-right motion while preserving its layout and imagery.
+- [x] Cross-check every page on desktop and mobile: 58 loading checks passed; signed-in administrator screens remain unverified.
 - [x] Add a 180-degree homepage entrance and a logo-adjacent 15-language selector that translates public pages.
 - [x] Exclude African languages from the selector; add an earth-coloured globe with blinking markers for 15 agent-selected major global markets outside Africa, labelled as selected markets rather than unverified branches.
 - [x] Add light-gold glass homepage theme, mobile refinement, company-logo page loading screen and company favicon.
