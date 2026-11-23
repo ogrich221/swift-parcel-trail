@@ -3,6 +3,7 @@ import { Package, Clock3, Truck, CheckCircle2, ArrowUpRight, MapPin } from 'luci
 import { Button } from '@/components/ui/button';
 import { useCustomer } from '@/lib/customer/query';
 import { shipmentGroup } from '@/lib/customer/schema';
+import { TrackingMap } from '@/components/tracking-map';
 import { Heading, ShipmentTable, Empty, Status, date } from './common';
 
 export function Overview() {
@@ -20,7 +21,22 @@ export function ShipmentDetails({id}: {id: string}) {
   const data = useCustomer(); const s = data.shipments.find(row => row.id===id);
   if (!s) return <><Heading title="Shipment not found"/><Empty title="This shipment is not available in your account"/></>;
   const events = data.events.filter(e => e.shipment_id===s.id).slice().sort((a,b) => a.occurred_at.localeCompare(b.occurred_at));
-  return <><Heading title={s.tracking_id} subtitle={`${s.origin} → ${s.destination}`} actions={<Button asChild variant="outline"><Link to="/account/$section" params={{section:'shipments'}}>All shipments</Link></Button>}/><Status status={s.status} cancelled={s.cancelled_at}/><dl className="customer-facts">{[['Shipment date',date(s.created_at)],['Estimated delivery',date(s.estimated_delivery)],['Current location',s.latest_location || 'Not recorded'],['Sender',s.sender_name],['Sender contact',s.sender_email],['Collection address',s.sender_address],['Recipient',s.recipient_name],['Recipient contact',s.recipient_email],['Delivery address',s.recipient_address],['Parcel',s.parcel_description],['Weight',`${s.parcel_weight} kg`],['Service',s.shipment_type]].map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value || 'Not recorded'}</dd></div>)}</dl><h2>Tracking activity</h2>{events.length ? <ol className="customer-timeline">{events.map(e => <li key={e.id}><span><MapPin size={16}/></span><div><strong>{e.status}</strong><p>{e.location}</p>{e.description && <p>{e.description}</p>}<small>{date(e.occurred_at,true)}</small>{e.delivery_verified && <small>Delivery verified</small>}</div></li>)}</ol> : <Empty title="No tracking events recorded"/>}</>;
+  const trackingRecord = {
+    tracking_id: s.tracking_id,
+    origin: s.origin,
+    destination: s.destination,
+    status: s.status,
+    latest_location: s.latest_location,
+    estimated_delivery: s.estimated_delivery,
+    created_at: s.created_at,
+    events: events.map(e => ({
+      status: e.status,
+      location: e.location,
+      description: e.description ?? '',
+      occurred_at: e.occurred_at,
+    })),
+  };
+  return <><Heading title={s.tracking_id} subtitle={`${s.origin} → ${s.destination}`} actions={<Button asChild variant="outline"><Link to="/account/$section" params={{section:'shipments'}}>All shipments</Link></Button>}/><Status status={s.status} cancelled={s.cancelled_at}/><TrackingMap record={trackingRecord}/><dl className="customer-facts">{[['Shipment date',date(s.created_at)],['Estimated delivery',date(s.estimated_delivery)],['Current location',s.latest_location || 'Not recorded'],['Sender',s.sender_name],['Sender contact',s.sender_email],['Collection address',s.sender_address],['Recipient',s.recipient_name],['Recipient contact',s.recipient_email],['Delivery address',s.recipient_address],['Parcel',s.parcel_description],['Weight',`${s.parcel_weight} kg`],['Service',s.shipment_type]].map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value || 'Not recorded'}</dd></div>)}</dl><h2>Tracking activity</h2>{events.length ? <ol className="customer-timeline">{events.map(e => <li key={e.id}><span><MapPin size={16}/></span><div><strong>{e.status}</strong><p>{e.location}</p>{e.description && <p>{e.description}</p>}<small>{date(e.occurred_at,true)}</small>{e.delivery_verified && <small>Delivery verified</small>}</div></li>)}</ol> : <Empty title="No tracking events recorded"/>}</>;
 }
 export function CustomerTracking({query, onQuery}: {query: string; onQuery: (value: string) => void}) {
   const {shipments} = useCustomer(); const s = shipments.find(s => s.tracking_id.toUpperCase()===query.trim().toUpperCase());
