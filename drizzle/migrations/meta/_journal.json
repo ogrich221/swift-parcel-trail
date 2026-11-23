@@ -50,6 +50,13 @@
       "when": 1795432959495,
       "tag": "0006_block_suspended_customer_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795435315571,
+      "tag": "0007_replace_ceo_access_email",
+      "breakpoints": true
     }
   ]
 }

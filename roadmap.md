@@ -1,5 +1,7 @@
 # Swift Delivery Express
-- [ ] Change the ceo 001 access email to ogrichindeed@gmail.com, retaining verified single-owner access.
+- [ ] Confirm the latest owner email spelling: ogrichineed@gmail versus the previously confirmed ogrichindeed@gmail.com; hold further access changes until answered.
+- [x] Change the ceo 001 access email and database eligibility to ogrichindeed@gmail.com; activation requires verification of the new email.
+- [x] Remove the previous access email from current website configuration and copy without deleting account history.
 - [x] Add shared show/hide eyes to all customer and workspace password fields; customer sign-in/signup and ceo 001 sign-in verified, recovery and signed-in settings require valid owner sessions.
 - [x] Rename sign-in to ceo 001, remove administrator wording and show passcode only; retain verified master authentication.
 - [ ] Set the requested ceo 001 credential: requires the owner to set it through the secure account recovery link; no credential is embedded in the website.
@@ -13,7 +15,7 @@
 - [x] Build separate flat glass-style master administrator dashboard with all management sections.
 - [x] Add single-master access controls, live operational data, audited mutations, private uploads and exports.
 - [ ] Verify signed-in administrator workflows and public tracking synchronisation: invitation must be accepted by the owner; signed-out access denial and 17 safety tests passed.
-- [ ] Activate master account: secure invitation sent to swiftdeliveryexpress4@gmail.com; access automatically assigned only after email verification.
+- [ ] Activate replacement master account at ogrichindeed@gmail.com: owner must create and verify this account; permission to change the previous account was declined.
 - [ ] Configure service email and payment refunds: requires verified sender domain and payment gateway.
 - [x] Design corporate website and all navigation pages.
 - [x] Connect tracking, customer accounts, booking, quotes and contact requests.
