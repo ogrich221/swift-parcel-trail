@@ -35,17 +35,13 @@ export async function sendAdminRecoveryCode(origin?: string): Promise<{email: st
   const redirectTo = origin ? `${origin}/admin/login` : undefined;
 
   // Dispatch password recovery OTP
-  const {error: recoveryErr} = await supabase.auth.resetPasswordForEmail(masterAdminEmail, {
-    redirectTo
-  });
+  const {error: recoveryErr} = await supabase.auth.resetPasswordForEmail(masterAdminEmail, redirectTo ? {redirectTo} : {});
 
   if (recoveryErr) {
     // If resetPasswordForEmail fails (e.g. rate limit), also attempt OTP sign-in code
     const {error: otpErr} = await supabase.auth.signInWithOtp({
       email: masterAdminEmail,
-      options: {
-        emailRedirectTo: redirectTo
-      }
+      options: redirectTo ? {emailRedirectTo: redirectTo} : {}
     });
     if (otpErr) {
       throw recoveryErr || otpErr;
