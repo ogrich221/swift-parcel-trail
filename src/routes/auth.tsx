@@ -18,7 +18,7 @@ export const Route = createFileRoute('/auth')({
   }),
   head: () =>
     pageHead(
-      'Customer account',
+      'Login',
       'Securely sign in or open a Swift Delivery Express customer account to manage your shipment requests.'
     ),
   component: Auth
@@ -156,7 +156,7 @@ function Auth() {
         <img src={companyLogo.url} alt="Swift Delivery Express" className="h-4 w-auto brightness-95" />
         <span>CUSTOMER PORTAL</span>
       </div>
-      <h1>{mode === 'forgot' ? 'Forgot your password?' : 'Customer Account Login'}</h1>
+      <h1>{mode === 'forgot' ? 'Forgot your password?' : 'Login'}</h1>
       <p>
         {mode === 'forgot'
           ? 'Enter your email to request a secure reset link.'
@@ -194,7 +194,7 @@ function Auth() {
         )}
 
         <Button disabled={busy} variant="premium">
-          {busy ? 'Signing in…' : mode === 'forgot' ? 'Send Reset Link' : 'Sign In to Profile'}
+          {busy ? 'Signing in…' : mode === 'forgot' ? 'Send Reset Link' : 'Login'}
         </Button>
       </form>
 

@@ -32,3 +32,5 @@
 - [ ] Official contact details, supported destinations and genuine reviews: awaiting owner information.- [x] Connect Tawk.to live chat widget on public pages (not admin); sandbox browser blocks the external chat service, real-browser rendering unverified.
 - [x] Set +1 000 000 SED as the published contact phone number on the contact page.
 - [x] Remove the admin dashboard route from the home page so the ceo 001 account gets no dashboard entry point there.
+
+- [x] Replace customer-account login wording with Login and remove the duplicate homepage sign-in link; preserve existing sign-in functionality.
