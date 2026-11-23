@@ -139,6 +139,35 @@ export type Database = {
           },
         ]
       }
+      customer_sessions: {
+        Row: {
+          first_seen: string
+          last_seen: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          first_seen?: string
+          last_seen?: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          first_seen?: string
+          last_seen?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_assignments: {
         Row: {
           created_at: string
@@ -282,10 +311,13 @@ export type Database = {
           country: string
           created_at: string
           customer_id: string
+          date_of_birth: string | null
           first_name: string
           id: string
           last_name: string
+          notification_preferences: Json
           phone: string
+          postal_code: string
           state: string
           suspension_reason: string
           updated_by: string | null
@@ -298,10 +330,13 @@ export type Database = {
           country?: string
           created_at?: string
           customer_id?: string
+          date_of_birth?: string | null
           first_name?: string
           id: string
           last_name?: string
+          notification_preferences?: Json
           phone?: string
+          postal_code?: string
           state?: string
           suspension_reason?: string
           updated_by?: string | null
@@ -314,10 +349,13 @@ export type Database = {
           country?: string
           created_at?: string
           customer_id?: string
+          date_of_birth?: string | null
           first_name?: string
           id?: string
           last_name?: string
+          notification_preferences?: Json
           phone?: string
+          postal_code?: string
           state?: string
           suspension_reason?: string
           updated_by?: string | null
@@ -606,7 +644,21 @@ export type Database = {
       get_published_website_content: { Args: never; Returns: Json }
       is_active_customer: { Args: never; Returns: boolean }
       is_master_admin: { Args: never; Returns: boolean }
+      manage_customer_notification: {
+        Args: { p_action: string; p_id: string }
+        Returns: undefined
+      }
+      record_customer_session: {
+        Args: { p_session_id: string }
+        Returns: undefined
+      }
       track_shipment: { Args: { p_tracking_id: string }; Returns: Json }
+      update_customer_avatar: { Args: { p_path: string }; Returns: undefined }
+      update_customer_preferences: {
+        Args: { p_preferences: Json }
+        Returns: undefined
+      }
+      update_customer_profile: { Args: { p_details: Json }; Returns: undefined }
     }
     Enums: {
       app_role: "master_admin"

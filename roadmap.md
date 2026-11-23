@@ -1,4 +1,7 @@
 # Swift Delivery Express
+- [ ] Connect customer sign-in to a protected dashboard with overview, own shipments, tracking and history.
+- [ ] Add permitted profile editing, private pictures, notifications, support conversations and secure settings.
+- [ ] Enforce suspension and ownership, synchronise administrator changes, and verify customer flows on mobile and desktop.
 - [x] Fix only the two selected findings: deployed shipment and history reads require active customer status; PostgreSQL fixture tests verify unchanged-session suspension denial, owner isolation and master access. Live signed-in UI check unavailable.
 - [x] Confirm the sole owner email spelling as ogrichindeed@gmail.com.
 - [x] Change the ceo 001 access email and database eligibility to ogrichindeed@gmail.com; activation requires verification of the new email.
