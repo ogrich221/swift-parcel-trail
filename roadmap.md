@@ -1,4 +1,5 @@
 # Swift Delivery Express
+- [ ] Change the ceo 001 access email: awaiting confirmation of the complete replacement email address.
 - [x] Add shared show/hide eyes to all customer and workspace password fields; customer sign-in/signup and ceo 001 sign-in verified, recovery and signed-in settings require valid owner sessions.
 - [x] Rename sign-in to ceo 001, remove administrator wording and show passcode only; retain verified master authentication.
 - [ ] Set the requested ceo 001 credential: requires the owner to set it through the secure account recovery link; no credential is embedded in the website.
