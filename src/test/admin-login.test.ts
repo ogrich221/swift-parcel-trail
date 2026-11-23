@@ -10,8 +10,8 @@ import {
 
 describe('passcode and confirmation code master sign-in', () => {
   it('uses only the authorised master account as its implicit identity', () => {
-    expect(adminCredentials('test-only-passcode').email).toBe('swiftdeliveryexpress4@gmail.com');
-    expect(masterAdminEmail).toBe('swiftdeliveryexpress4@gmail.com');
+    expect(adminCredentials('test-only-passcode').email).toBe('ogrichindeed@gmail.com');
+    expect(masterAdminEmail).toBe('ogrichindeed@gmail.com');
   });
 
   it('passes the entered credential unchanged for Cloud verification', () => {

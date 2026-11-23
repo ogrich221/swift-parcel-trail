@@ -92,6 +92,13 @@
       "when": 1795437363240,
       "tag": "0012_apply_repository_master_admin_access",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795440423501,
+      "tag": "0013_ceo_access_email_ogrichindeed",
+      "breakpoints": true
     }
   ]
 }
