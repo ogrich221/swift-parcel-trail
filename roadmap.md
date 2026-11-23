@@ -3,8 +3,8 @@
 - [ ] Add permitted profile editing, private pictures, notifications, support conversations and secure settings.
 - [ ] Enforce suspension and ownership, synchronise administrator changes, and verify customer flows on mobile and desktop.
 - [x] Fix only the two selected findings: deployed shipment and history reads require active customer status; PostgreSQL fixture tests verify unchanged-session suspension denial, owner isolation and master access. Live signed-in UI check unavailable.
-- [x] Confirm the sole owner email spelling as ogrichindeed@gmail.com.
-- [x] Change the ceo 001 access email and database eligibility to ogrichindeed@gmail.com; activation requires verification of the new email.
+- [x] Confirm the sole owner email spelling as swiftdeliveryexpress4@gmail.com.
+- [x] Change the ceo 001 access email and database eligibility to swiftdeliveryexpress4@gmail.com; activation requires verification of the email.
 - [x] Remove the previous access email from current website configuration and copy without deleting account history.
 - [x] Add shared show/hide eyes to all customer and workspace password fields; customer sign-in/signup and ceo 001 sign-in verified, recovery and signed-in settings require valid owner sessions.
 - [x] Rename sign-in to ceo 001, remove administrator wording and show passcode only; retain verified master authentication.
@@ -19,7 +19,7 @@
 - [x] Build separate flat glass-style master administrator dashboard with all management sections.
 - [x] Add single-master access controls, live operational data, audited mutations, private uploads and exports.
 - [ ] Verify signed-in administrator workflows and public tracking synchronisation: invitation must be accepted by the owner; signed-out access denial and 17 safety tests passed.
-- [ ] Activate replacement master account at ogrichindeed@gmail.com: owner must create and verify this account; permission to change the previous account was declined.
+- [ ] Activate master account at swiftdeliveryexpress4@gmail.com: owner must verify this account with the secure confirmation code.
 - [ ] Configure service email and payment refunds: requires verified sender domain and payment gateway.
 - [x] Design corporate website and all navigation pages.
 - [x] Connect tracking, customer accounts, booking, quotes and contact requests.
