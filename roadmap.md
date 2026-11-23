@@ -29,4 +29,5 @@
 - [x] Verify mobile layout, public request submissions, unknown tracking numbers and shipment privacy tests.
 - [ ] Verify signed-in booking submission: customer dashboard flows verified, booking submission remains untested.
 - [ ] Verify positive operational tracking: awaiting actual company shipment records.
-- [ ] Official contact details, supported destinations and genuine reviews: awaiting owner information.
+- [ ] Official contact details, supported destinations and genuine reviews: awaiting owner information.- [x] Connect Tawk.to live chat widget on public pages (not admin); sandbox browser blocks the external chat service, real-browser rendering unverified.
+- [x] Set +1 000 000 SED as the published contact phone number on the contact page.

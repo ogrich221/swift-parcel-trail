@@ -15,6 +15,7 @@ import { useEffect, type ReactNode } from "react";
 import { BrandLoading, PageLoadingScreen } from "@/components/brand-loading";
 import { PublicContentProvider, PublicAnnouncements } from "@/lib/public-content";
 import { Header, Footer } from "@/components/site";
+import { TawkChat } from "@/components/tawk-chat";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import appCss from "../styles.css?url";
@@ -152,7 +153,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      {isAdmin ? <Outlet /> : <LanguageProvider><PublicContentProvider><Header /><PublicAnnouncements /><main><Outlet /></main><Footer /></PublicContentProvider></LanguageProvider>}
+      {isAdmin ? <Outlet /> : <LanguageProvider><PublicContentProvider><Header /><PublicAnnouncements /><main><Outlet /></main><Footer /><TawkChat /></PublicContentProvider></LanguageProvider>}
       <PageLoadingScreen />
       <Toaster />
     </QueryClientProvider>
