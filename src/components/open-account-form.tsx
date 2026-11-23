@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import companyLogo from '@/assets/swift-company-logo.asset.json';
 import {
   type RegistrationData,
+  type RegistrationErrors,
   validateRegistrationData,
   getPasswordStrength
 } from '@/lib/customer/registration';
@@ -32,7 +33,7 @@ export function OpenAccountForm({
     agree: false
   });
 
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<RegistrationErrors>({});
   const [generalError, setGeneralError] = useState('');
   const [busy, setBusy] = useState(false);
   const [registeredUser, setRegisteredUser] = useState<{

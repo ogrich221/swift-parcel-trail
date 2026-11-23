@@ -75,8 +75,22 @@ export function getPasswordStrength(password: string): {
   };
 }
 
-export function validateRegistrationData(data: RegistrationData): {valid: boolean; errors: Record<string, string>} {
-  const errors: Record<string, string> = {};
+export interface RegistrationErrors {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  country?: string;
+  city?: string;
+  address?: string;
+  password?: string;
+  confirm?: string;
+  agree?: string;
+  form?: string;
+}
+
+export function validateRegistrationData(data: RegistrationData): {valid: boolean; errors: RegistrationErrors} {
+  const errors: RegistrationErrors = {};
 
   if (!data.first_name.trim()) errors.first_name = 'First name is required.';
   if (!data.last_name.trim()) errors.last_name = 'Last name is required.';
