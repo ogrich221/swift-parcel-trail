@@ -57,7 +57,12 @@ function Auth() {
           email: address,
           password
         });
-        if (err) throw err;
+        if (err) {
+          if (err.message.toLowerCase().includes('email not confirmed')) {
+            throw new Error('Please confirm your email address using the link sent to your inbox first, then wait for administrator approval.');
+          }
+          throw err;
+        }
         setEmail(data.user?.email ?? '');
         // Navigate directly to user profile as requested
         if (redirect && redirect.startsWith('/account/')) {

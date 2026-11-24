@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveCoordinates, projectCoordinates } from '@/lib/geocoding';
+import { resolveCoordinates, projectCoordinates, resolveCurrentLocationTarget } from '@/lib/geocoding';
 import { DEMO_SHIPMENTS } from '@/lib/demo-shipments';
 import { trackingSchema } from '@/lib/shipment';
 
@@ -55,5 +55,61 @@ describe('tracking map and geocoding', () => {
       expect(record.origin).toBeTruthy();
       expect(record.destination).toBeTruthy();
     }
+  });
+
+  it('resolves exact current location target for active, delivered, and newly registered shipments', () => {
+    const active = resolveCurrentLocationTarget({
+      tracking_id: 'SDE-LIVE-01',
+      origin: 'New York, United States',
+      destination: 'London, United Kingdom',
+      status: 'In Transit',
+      latest_location: 'Frankfurt, Germany',
+      created_at: '2026-11-24T08:00:00Z',
+      events: [
+        {
+          status: 'In Transit',
+          location: 'Frankfurt, Germany',
+          description: 'Departed sorting hub',
+          occurred_at: '2026-11-24T09:30:00Z',
+        },
+      ],
+    });
+    expect(active.location).toBe('Frankfurt, Germany');
+    expect(active.lat).toBeCloseTo(50.1109, 3);
+    expect(active.lon).toBeCloseTo(8.6821, 3);
+    expect(active.isCancelled).toBe(false);
+
+    const delivered = resolveCurrentLocationTarget({
+      tracking_id: 'SDE-LIVE-02',
+      origin: 'New York, United States',
+      destination: 'Tokyo, Japan',
+      status: 'Delivered',
+      latest_location: 'Frankfurt, Germany',
+      created_at: '2026-11-24T08:00:00Z',
+      events: [
+        {
+          status: 'Delivered',
+          location: 'Tokyo, Japan',
+          description: 'Signed by recipient',
+          occurred_at: '2026-11-24T12:00:00Z',
+        },
+      ],
+    });
+    expect(delivered.location).toBe('Tokyo, Japan');
+    expect(delivered.lat).toBeCloseTo(35.6762, 3);
+    expect(delivered.lon).toBeCloseTo(139.6503, 3);
+
+    const registered = resolveCurrentLocationTarget({
+      tracking_id: 'SDE-LIVE-03',
+      origin: 'London, United Kingdom',
+      destination: 'Sydney, Australia',
+      status: 'Shipment Registered',
+      latest_location: null,
+      created_at: '2026-11-24T08:00:00Z',
+      events: [],
+    });
+    expect(registered.location).toBe('London, United Kingdom');
+    expect(registered.lat).toBeCloseTo(51.5074, 3);
+    expect(registered.lon).toBeCloseTo(-0.1278, 3);
   });
 });

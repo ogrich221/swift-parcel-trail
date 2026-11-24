@@ -155,7 +155,7 @@ export function OpenAccountForm({
         </h1>
 
         <p className="text-sm md:text-base text-slate-600 mb-8 max-w-md mx-auto leading-relaxed">
-          Your account has been successfully created. Please verify your email address to complete your registration and access your customer dashboard.
+          Your account has been created. First, confirm your email address using the link sent to your inbox. Once confirmed, your account will wait for administrator approval before you can access the customer dashboard.
         </p>
 
         {/* Customer Account Summary Card */}
@@ -176,7 +176,7 @@ export function OpenAccountForm({
             <span className="font-semibold text-slate-500">Account Status</span>
             <span className="inline-flex items-center gap-1.5 font-medium text-amber-600">
               <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              Pending Email Verification
+              Pending Email Confirmation &amp; Admin Approval
             </span>
           </div>
         </div>

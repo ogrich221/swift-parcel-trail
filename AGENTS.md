@@ -53,3 +53,5 @@ use the editor.
 - Preserve timezone and millisecond precision in operational datetime inputs, and refresh open public tracking without discarding its last confirmed result so all shipment views stay synchronized.
 - Project cancellation ahead of the last travel status in public tracking, filters, customer history, maps, counts and shipment exports; preserve recorded events and suppress live-route motion and ETA for cancelled shipments.
 - Store open administrator selections by record ID and derive their current rows from refreshed data so details do not retain outdated shipment, customer or request snapshots.
+- Load the clickable current-location street map through lazy browser-only Leaflet and OpenStreetMap tiles behind ClientOnly so SSR never imports Leaflet.
+- Default newly registered customer profiles to pending approval after email confirmation; keep pending users blocked by active-customer RLS until the master administrator approves confirmed accounts.

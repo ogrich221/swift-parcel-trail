@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
+import { ClientOnly } from '@tanstack/react-router';
 import {
   MapPin,
   Plane,
@@ -16,9 +17,12 @@ import {
   Info,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { resolveCoordinates, projectCoordinates } from '@/lib/geocoding';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { resolveCoordinates, projectCoordinates, resolveCurrentLocationTarget } from '@/lib/geocoding';
 import type { z } from 'zod';
 import { trackingMapState, type trackingSchema } from '@/lib/shipment';
+
+const CurrentLocationMap = lazy(() => import('@/components/current-location-map'));
 
 type TrackingRecord = z.infer<typeof trackingSchema>;
 
@@ -69,10 +73,12 @@ function generateArcPath(
 export function TrackingMap({ record }: { record: TrackingRecord }) {
   const [landPath, setLandPath] = useState<string>('');
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
+  const [locationMapOpen, setLocationMapOpen] = useState(false);
   const {cancelled: isCancelled, delivered: isDelivered, progressPercent} = trackingMapState(record.status);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [viewMode, setViewMode] = useState<'fit' | 'world'>('fit');
   const svgRef = useRef<SVGSVGElement>(null);
+  const currentLocationTarget = useMemo(() => resolveCurrentLocationTarget(record), [record]);
 
   const canvasWidth = 960;
   const canvasHeight = 480;
@@ -301,6 +307,16 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
           <div className="flex items-center gap-1 bg-card/80 backdrop-blur-md p-1 border rounded-md">
             <Button
               type="button"
+              variant="secondary"
+              size="sm"
+              className="h-8 px-2.5 text-xs"
+              onClick={() => setLocationMapOpen(true)}
+            >
+              <MapPin size={14} className="mr-1.5" />
+              Current location map
+            </Button>
+            <Button
+              type="button"
               variant="ghost"
               size="icon"
               className="w-8 h-8"
@@ -350,7 +366,19 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
       </div>
 
       {/* Interactive SVG Route Map Canvas */}
-      <div className="tracking-map-canvas-wrap">
+      <div
+        className="tracking-map-canvas-wrap is-clickable"
+        role="button"
+        tabIndex={0}
+        aria-label={`Open street map of current location: ${currentLocationTarget.location}`}
+        onClick={() => setLocationMapOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setLocationMapOpen(true);
+          }
+        }}
+      >
         <svg
           ref={svgRef}
           viewBox={viewBox}
@@ -478,7 +506,11 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
                 key={w.id}
                 className={`waypoint-node cursor-pointer ${w.type}`}
                 transform={`translate(${w.x}, ${w.y})`}
-                onClick={() => setSelectedPoint(w)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPoint(w);
+                  if (w.isCurrent) setLocationMapOpen(true);
+                }}
               >
                 {/* Radar pulse for active/current location */}
                 {w.isCurrent && (
@@ -629,6 +661,11 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
             )}
           </div>
         )}
+
+        <div className="tracking-map-open-hint" aria-hidden="true">
+          <MapPin size={13} />
+          <span>Click map to view current location</span>
+        </div>
       </div>
 
       {/* Journey Progress Bar */}
@@ -683,6 +720,24 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
           </button>
         ))}
       </div>
+
+      <Dialog open={locationMapOpen} onOpenChange={setLocationMapOpen}>
+        <DialogContent className="current-location-dialog">
+          <DialogHeader>
+            <DialogTitle>Current Location Map · {record.tracking_id}</DialogTitle>
+            <DialogDescription>
+              Interactive street map centered on {currentLocationTarget.location}.
+            </DialogDescription>
+          </DialogHeader>
+          {locationMapOpen && (
+            <ClientOnly fallback={<div className="current-location-leaflet flex items-center justify-center text-sm text-muted-foreground">Loading map…</div>}>
+              <Suspense fallback={<div className="current-location-leaflet flex items-center justify-center text-sm text-muted-foreground">Loading map…</div>}>
+                <CurrentLocationMap target={currentLocationTarget} />
+              </Suspense>
+            </ClientOnly>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

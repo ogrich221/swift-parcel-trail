@@ -1,4 +1,6 @@
 # Swift Delivery Express
+- [x] Allow users to click the live map to open an interactive street map (Leaflet + OpenStreetMap) centered on the shipment's current location.
+- [x] Require newly registered users to confirm their email and then wait for admin approval before accessing their customer account.
 - [x] Improve tracking detail with creation time, latest travel timestamp, full ETA, readable tracking IDs and explicit sample labels; phone/desktop lookup and unknown-code rejection checked, 20 tracking tests passed.
 - [x] Verify a newly company-created tracking code through ceo 001 and public tracking: actual sign-in, shipment creation, travel save/reload, signed-out phone lookup and desktop shareable link passed with detailed locations, timestamps, ETA and descriptions; removed the labelled temporary shipment and confirmed its code no longer tracks, preserving audit history.
 - [x] Complete shipment-status sweep: corrected administrator filters/customer history/open selections, cancelled-map live indicators, profile/report totals and shipment export projections. Browser verified open details updating from another tab and both active/cancelled filters; all 77 tests passed. Code-reviewed other listed paths; temporary sweep shipment removed, settled records/permissions/settings/sample data unchanged.

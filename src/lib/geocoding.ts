@@ -7,6 +7,17 @@ export interface GeoLocation {
   lon: number;
 }
 
+export interface CurrentLocationTarget {
+  trackingId: string;
+  location: string;
+  status: string;
+  lat: number;
+  lon: number;
+  occurredAt: string | null;
+  description: string | null;
+  isCancelled: boolean;
+}
+
 const CITY_DATABASE: Record<string, [number, number]> = {
   // North America
   'new york': [40.7128, -74.006],
@@ -273,4 +284,49 @@ export function projectCoordinates(
   const y = ((90 - clampedLat) / 180) * height;
 
   return [x, y];
+}
+
+export function resolveCurrentLocationTarget(record: {
+  tracking_id: string;
+  origin: string;
+  destination: string;
+  status: string;
+  latest_location: string | null;
+  created_at: string;
+  events: { status: string; location: string; description: string; occurred_at: string }[];
+}): CurrentLocationTarget {
+  const sortedEvents = [...record.events].sort(
+    (a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime()
+  );
+  const latestEvent = sortedEvents[sortedEvents.length - 1];
+  const isCancelled = record.status === 'Cancelled';
+  const isDelivered = record.status === 'Delivered';
+
+  let location = record.origin;
+  let occurredAt: string | null = record.created_at;
+  let description: string | null = latestEvent?.description ?? null;
+
+  if (isDelivered) {
+    location = latestEvent?.location || record.destination;
+    occurredAt = latestEvent?.occurred_at ?? record.created_at;
+    description = latestEvent?.description ?? 'Delivered to recipient address';
+  } else if (record.latest_location && record.latest_location.trim()) {
+    location = record.latest_location.trim();
+    occurredAt = latestEvent?.occurred_at ?? record.created_at;
+  } else if (latestEvent?.location) {
+    location = latestEvent.location;
+    occurredAt = latestEvent.occurred_at;
+  }
+
+  const [lat, lon] = resolveCoordinates(location, 0);
+  return {
+    trackingId: record.tracking_id,
+    location,
+    status: record.status,
+    lat,
+    lon,
+    occurredAt,
+    description,
+    isCancelled,
+  };
 }

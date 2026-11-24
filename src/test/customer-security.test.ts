@@ -30,6 +30,7 @@ beforeAll(async()=>{
     INSERT INTO profiles(id) VALUES('${owner}'),('${other}');`);
   await db.exec(readFileSync('drizzle/migrations/0009_customer_dashboard_access.sql','utf8'));
   await db.exec(readFileSync('drizzle/migrations/0010_customer_notification_preferences.sql','utf8'));
+  await db.exec(readFileSync('drizzle/migrations/0017_require_admin_approval_for_new_users.sql','utf8'));
   await db.exec(`SET request.jwt.claim.sub='${owner}';`);
 },35000);
 afterAll(async()=>{await db?.close();});
@@ -76,5 +77,16 @@ describe('customer database security',()=>{
     await db.exec(`SET ROLE authenticated;SELECT update_customer_preferences('{"shipment":false,"account":true,"support":true}');RESET ROLE;INSERT INTO customer_notifications(user_id,category) VALUES('${owner}','shipment');`);
     const result=await db.query<{count:number}>(`SELECT count(*)::int AS count FROM customer_notifications WHERE user_id='${owner}' AND category='shipment'`);
     expect(result.rows[0]?.count).toBe(0);
+  });
+  it('defaults newly registered profiles to pending and blocks protected access until approved',async()=>{
+    const newcomer='77777777-7777-4777-8777-777777777777';
+    await db.exec(`INSERT INTO profiles(id) VALUES('${newcomer}');SET request.jwt.claim.sub='${newcomer}';SET ROLE authenticated;`);
+    const created=await db.query<{account_status:string}>(`SELECT account_status FROM profiles WHERE id='${newcomer}'`);
+    expect(created.rows[0]?.account_status).toBe('pending');
+    await expect(db.exec("SELECT update_customer_profile('{\"first_name\":\"Early\"}')")).rejects.toThrow('Active customer required');
+    await expect(db.exec(`INSERT INTO service_requests(user_id,kind) VALUES('${newcomer}','booking')`)).rejects.toThrow('row-level security');
+    await db.exec(`RESET ROLE;UPDATE profiles SET account_status='active' WHERE id='${newcomer}';SET ROLE authenticated;`);
+    await db.exec("SELECT update_customer_profile('{\"first_name\":\"Approved\"}')");
+    await db.exec(`RESET ROLE;SET request.jwt.claim.sub='${owner}';`);
   });
 });
