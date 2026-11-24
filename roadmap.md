@@ -38,4 +38,5 @@
 - [x] Add shipment-level travel progress editing using the existing secured tracking updates; existing tracking safeguards pass in all 59 tests.
 - [ ] Verify administrator travel progress save and public read-back: owner-session testing permission was declined.
 
-- [ ] Cross-check administrator shipment creation, tracking updates, and public tracking read-back with real input.
+- [x] Cross-check live shipment creation, generated tracking number, progress update, correction, and public read-back in a rolled-back transaction; no test shipments remain. Added three isolated PostgreSQL regression tests; all 23 related tests pass. Unknown-number public UI check passes.
+- [ ] Verify shipment creation and tracking through signed-in administrator buttons: the approved test session lacks the required authentication session ID; awaits owner sign-in in the preview.
