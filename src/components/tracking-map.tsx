@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { resolveCoordinates, projectCoordinates } from '@/lib/geocoding';
 import type { z } from 'zod';
-import type { trackingSchema } from '@/lib/shipment';
+import { trackingMapState, type trackingSchema } from '@/lib/shipment';
 
 type TrackingRecord = z.infer<typeof trackingSchema>;
 
@@ -68,7 +68,8 @@ function generateArcPath(
 
 export function TrackingMap({ record }: { record: TrackingRecord }) {
   const [landPath, setLandPath] = useState<string>('');
-  const [selectedPoint, setSelectedPoint] = useState<Waypoint | null>(null);
+  const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
+  const {cancelled: isCancelled, delivered: isDelivered, progressPercent} = trackingMapState(record.status);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [viewMode, setViewMode] = useState<'fit' | 'world'>('fit');
   const svgRef = useRef<SVGSVGElement>(null);
@@ -134,7 +135,6 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
   // Compute Waypoints
   const waypoints = useMemo<Waypoint[]>(() => {
     const list: Waypoint[] = [];
-    const isDelivered = record.status === 'Delivered';
 
     // 1. Origin
     const [origLat, origLon] = resolveCoordinates(record.origin, 0);
@@ -166,7 +166,7 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
       const isLatestEvent = idx === sortedEvents.length - 1;
       list.push({
         id: `ev-${idx}`,
-        type: isLatestEvent && !isDelivered ? 'current' : 'checkpoint',
+        type: isLatestEvent && !isDelivered && !isCancelled ? 'current' : 'checkpoint',
         label: `Checkpoint ${idx + 1}`,
         title: ev.status,
         location: ev.location,
@@ -177,12 +177,12 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
         x,
         y,
         isCompleted: true,
-        isCurrent: isLatestEvent && !isDelivered,
+        isCurrent: isLatestEvent && !isDelivered && !isCancelled,
       });
     });
 
     // 3. Current latest location if not already added
-    if (record.latest_location && !isDelivered) {
+    if (record.latest_location && !isDelivered && !isCancelled) {
       const lastWp = list[list.length - 1];
       if (!lastWp || lastWp.location.toLowerCase() !== record.latest_location.toLowerCase()) {
         const [lat, lon] = resolveCoordinates(record.latest_location, list.length + 1);
@@ -213,8 +213,10 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
       label: 'Destination',
       title: isDelivered ? 'Successfully Delivered' : 'Final Delivery Destination',
       location: record.destination,
-      occurredAt: isDelivered ? sortedEvents[sortedEvents.length - 1]?.occurred_at : record.estimated_delivery ?? undefined,
-      description: isDelivered
+      occurredAt: isDelivered ? sortedEvents[sortedEvents.length - 1]?.occurred_at : isCancelled ? undefined : record.estimated_delivery ?? undefined,
+      description: isCancelled
+        ? 'Shipment cancelled; delivery is no longer scheduled.'
+        : isDelivered
         ? 'Delivered to recipient address'
         : `Scheduled delivery by ${record.estimated_delivery ? new Date(record.estimated_delivery).toLocaleDateString() : 'estimated arrival date'}`,
       lat: destLat,
@@ -228,8 +230,11 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
     return list;
   }, [record]);
 
-  // Active waypoint (either currently selected or latest current)
-  const activeWaypoint = selectedPoint ?? waypoints.find((w) => w.isCurrent) ?? waypoints[waypoints.length - 1];
+  // Resolve selections against refreshed waypoints so corrections stay visible.
+  const selectedPoint = waypoints.find(w => w.id === selectedPointId) ?? null;
+  const setSelectedPoint = (point: Waypoint) => setSelectedPointId(point.id);
+  const lastRecorded = waypoints.filter(w => w.type !== 'destination').at(-1);
+  const activeWaypoint = selectedPoint ?? waypoints.find((w) => w.isCurrent) ?? (isCancelled ? lastRecorded : waypoints[waypoints.length - 1]);
 
   // Calculate dynamic bounding box for "fit to route"
   const viewBox = useMemo(() => {
@@ -263,17 +268,6 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
     return `${boxX} ${boxY} ${boxW} ${boxH}`;
   }, [waypoints, viewMode, zoomLevel]);
 
-  // Calculate percentage of journey completed
-  const progressPercent = useMemo(() => {
-    if (record.status === 'Delivered') return 100;
-    if (record.status === 'Out for Delivery') return 90;
-    if (record.status === 'Arrived at Sorting Facility') return 80;
-    if (record.status === 'In Transit') return 65;
-    if (record.status === 'Processing') return 45;
-    if (record.status === 'Picked Up') return 25;
-    return 15;
-  }, [record.status]);
-
   // Is route mostly intercontinental or regional?
   const isIntercontinental = useMemo(() => {
     if (waypoints.length < 2) return false;
@@ -290,9 +284,9 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
       <div className="tracking-map-header">
         <div className="tracking-map-title">
           <div className="flex items-center gap-2">
-            <span className="live-radar-dot" />
+            {!isCancelled && <span className="live-radar-dot" />}
             <span className="text-xs font-bold tracking-wider text-primary uppercase">
-              Live Shipment Map
+              {isCancelled ? 'Shipment History Map' : 'Live Shipment Map'}
             </span>
           </div>
           <h3>
@@ -638,7 +632,7 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
       </div>
 
       {/* Journey Progress Bar */}
-      <div className="tracking-map-progress-bar">
+      {progressPercent !== null && <div className="tracking-map-progress-bar">
         <div className="flex items-center justify-between text-xs mb-1.5">
           <span className="font-medium text-foreground flex items-center gap-1.5">
             <Compass size={14} className="text-primary" />
@@ -656,7 +650,7 @@ export function TrackingMap({ record }: { record: TrackingRecord }) {
             style={{ width: `${progressPercent}%` }}
           />
         </div>
-      </div>
+      </div>}
 
       {/* Understandable Waypoint Milestones Strip */}
       <div className="tracking-milestone-strip">

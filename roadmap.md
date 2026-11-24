@@ -1,4 +1,5 @@
 # Swift Delivery Express
+- [ ] Complete shipment-status consistency sweep across administrator filters/customer history/open details, shared maps, dashboard counts and exports; preserve settled records, permissions, settings and sample data.
 - [x] Verify administrator/customer synchronisation end-to-end: linked shipments, live progress and corrections, notification read status, two-way profile edits, support replies and booking review all passed in separate signed-in accounts. Corrected same-minute/timezone timestamps, automatic public tracking refresh and cancelled-status mismatch; all 72 tests passed and labelled verification records were removed without changing audit history.
 - [x] Apply the repository's updated sole-owner access and confirmation-code sign-in without undoing the customer dashboard; live access function checked, login controls rendered, and 27 tests passed. Email delivery and successful owner sign-in require inbox verification.
 - [x] Connect customer sign-in to a protected dashboard with overview, own shipments, tracking and history.

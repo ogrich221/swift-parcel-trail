@@ -29,6 +29,7 @@ import { useCustomer, customerQuery } from '@/lib/customer/query';
 import { saveCustomerProfile, saveCustomerAvatar } from '@/lib/customer/customer.functions';
 import { validatePicture, profileInput } from '@/lib/customer/schema';
 import { supabase } from '@/integrations/supabase/client';
+import { shipmentDisplayStatus } from '@/lib/shipment';
 
 export function CustomerProfile() {
   const { profile, account, avatar, shipments = [] } = useCustomer();
@@ -103,7 +104,7 @@ export function CustomerProfile() {
   const initials = [profile.first_name, profile.last_name].map(s => s[0] ?? '').join('') || 'C';
   const memberSince = profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recent';
   const activeShipmentsCount = shipments.filter(s => s.status !== 'Delivered' && !s.cancelled_at).length;
-  const completedShipmentsCount = shipments.filter(s => s.status === 'Delivered').length;
+  const completedShipmentsCount = shipments.filter(s => shipmentDisplayStatus(s.status, s.cancelled_at) === 'Delivered').length;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
