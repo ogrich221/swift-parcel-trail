@@ -21,8 +21,8 @@
 - [x] Extend homepage with branded ship, air freight, home-to-home, bike and truck photographs and safety quotes; retain flat styling.
 - [x] Build separate flat glass-style master administrator dashboard with all management sections.
 - [x] Add single-master access controls, live operational data, audited mutations, private uploads and exports.
-- [ ] Verify signed-in administrator workflows and public tracking synchronisation: invitation must be accepted by the owner; signed-out access denial and 17 safety tests passed.
-- [ ] Activate master account at ogrichindeed@gmail.com: owner must verify this account with the secure confirmation code.
+- [x] Verify signed-in administrator shipment creation and public tracking synchronisation: ceo 001 sign-in succeeded; dashboard creation, saved progress after reload and signed-out mobile tracking passed with a labelled temporary shipment, subsequently removed while preserving audit history.
+- [x] Confirm master account access at ogrichindeed@gmail.com: actual passcode sign-in opened the operations dashboard.
 - [ ] Configure service email and payment refunds: requires verified sender domain and payment gateway.
 - [x] Design corporate website and all navigation pages.
 - [x] Connect tracking, customer accounts, booking, quotes and contact requests.
@@ -36,7 +36,7 @@
 - [x] Replace customer-account login wording with Login and remove the duplicate homepage sign-in link; preserve existing sign-in functionality.
 
 - [x] Add shipment-level travel progress editing using the existing secured tracking updates; existing tracking safeguards pass in all 59 tests.
-- [ ] Verify administrator travel progress save and public read-back: owner-session testing permission was declined.
+- [x] Verify administrator travel progress save and public read-back: saved In Transit through the shipment-level form, confirmed persistence after reload and matching signed-out mobile public tracking.
 
 - [x] Cross-check live shipment creation, generated tracking number, progress update, correction, and public read-back in a rolled-back transaction; no test shipments remain. Added three isolated PostgreSQL regression tests; all 23 related tests pass. Unknown-number public UI check passes.
-- [ ] Verify shipment creation and tracking through signed-in administrator buttons: the approved test session lacks the required authentication session ID; awaits owner sign-in in the preview.
+- [x] Verify shipment creation and tracking through signed-in administrator buttons: owner supplied sign-in succeeded; unique tracking number creation, locked shipment identity, saved progress and public read-back passed; temporary shipment removed.
