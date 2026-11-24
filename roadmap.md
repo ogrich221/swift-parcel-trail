@@ -37,3 +37,5 @@
 
 - [x] Add shipment-level travel progress editing using the existing secured tracking updates; existing tracking safeguards pass in all 59 tests.
 - [ ] Verify administrator travel progress save and public read-back: owner-session testing permission was declined.
+
+- [ ] Cross-check administrator shipment creation, tracking updates, and public tracking read-back with real input.
