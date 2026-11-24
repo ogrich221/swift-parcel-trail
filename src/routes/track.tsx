@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
-import { Loader2, PackageSearch, Share2, Check, Sparkles, MapPin, ExternalLink } from 'lucide-react';
+import { Loader2, PackageSearch, Share2, Check, Sparkles, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { TrackingPanel } from '@/components/tracking-panel';
@@ -185,9 +185,9 @@ function Track() {
             <div className="result-header">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-1">
-                  OFFICIAL TRACKING RECORD
+                  {DEMO_SHIPMENTS[record.tracking_id] ? 'SAMPLE TRACKING RECORD' : 'OFFICIAL TRACKING RECORD'}
                 </span>
-                <h2>{record.tracking_id}</h2>
+                <h2 className="break-all text-xl sm:text-2xl">{record.tracking_id}</h2>
               </div>
               <div className="flex items-center gap-2.5">
                 <Button
@@ -197,7 +197,7 @@ function Track() {
                   onClick={copyTrackingLink}
                   title="Share or copy tracking link"
                 >
-                  {copied ? <Check size={13} className="text-emerald-500" /> : <Share2 size={13} />}
+                  {copied ? <Check size={13} className="text-primary" /> : <Share2 size={13} />}
                   {copied ? 'Link Copied' : 'Share Tracking'}
                 </Button>
                 <span className={`status-label status-${record.status.toLowerCase().replaceAll(' ', '-')}`}>
@@ -212,15 +212,16 @@ function Track() {
                 ['Origin', record.origin],
                 ['Destination', record.destination],
                 ['Latest recorded location', record.latest_location ?? 'Not yet recorded'],
-                ['Shipment created', new Date(record.created_at).toLocaleDateString()],
+                ['Shipment created', new Date(record.created_at).toLocaleString()],
+                ['Latest travel update', record.events[0] ? new Date(record.events[0].occurred_at).toLocaleString() : 'Awaiting first travel update'],
                 [
                   'Estimated delivery',
-                  record.estimated_delivery
-                    ? new Date(record.estimated_delivery).toLocaleDateString()
+                  record.status === 'Cancelled' ? 'Not applicable — shipment cancelled' : record.estimated_delivery
+                    ? new Date(record.estimated_delivery).toLocaleString()
                     : 'Pending confirmation',
                 ],
               ].map(([label, value]) => (
-                <div key={label}>
+                <div key={label} className="min-w-0 break-words">
                   <dt>{label}</dt>
                   <dd>{value}</dd>
                 </div>
@@ -237,7 +238,7 @@ function Track() {
             </div>
 
             {/* Detailed Shipment History Timeline */}
-            <div className="flex items-center justify-between border-b pb-3 mt-8 mb-4">
+            <div className="flex flex-wrap gap-3 items-center justify-between border-b pb-3 mt-8 mb-4">
               <h3 className="text-lg font-bold m-0 flex items-center gap-2">
                 <MapPin size={18} className="text-primary" />
                 Shipment History & Milestones
@@ -252,7 +253,7 @@ function Track() {
             ) : (
               <div className="divide-y divide-border">
                 {record.events.map((ev, i) => (
-                  <div className="history-row" key={i}>
+                  <div className="history-row break-words" key={`${ev.occurred_at}-${i}`}>
                     <small>{new Date(ev.occurred_at).toLocaleString()}</small>
                     <div>
                       <strong>{ev.status}</strong>

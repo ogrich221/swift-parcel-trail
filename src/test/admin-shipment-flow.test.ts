@@ -72,6 +72,9 @@ describe('administrator shipment and public tracking flow', () => {
     expect(record?.latest_location).toBe('New York airport');
     expect(record?.events).toHaveLength(3);
     expect(record?.events[0]?.location).toBe('New York airport');
+    expect(record?.destination).toBe('New York, United States');
+    expect(record?.events[0]?.description).toBe('Isolated journey verification');
+    expect(new Date(record?.events[0]?.occurred_at ?? '').toISOString()).toBe('2026-01-01T10:00:00.000Z');
     const audit = await db.query<{ total: number }>(
       "SELECT count(*)::int AS total FROM public.admin_activity WHERE entity_type='shipment_events' AND entity_id=$1",
       [transit],
