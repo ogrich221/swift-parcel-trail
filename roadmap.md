@@ -1,9 +1,10 @@
 # Swift Delivery Express
+- [x] Verify administrator/customer synchronisation end-to-end: linked shipments, live progress and corrections, notification read status, two-way profile edits, support replies and booking review all passed in separate signed-in accounts. Corrected same-minute/timezone timestamps, automatic public tracking refresh and cancelled-status mismatch; all 72 tests passed and labelled verification records were removed without changing audit history.
 - [x] Apply the repository's updated sole-owner access and confirmation-code sign-in without undoing the customer dashboard; live access function checked, login controls rendered, and 27 tests passed. Email delivery and successful owner sign-in require inbox verification.
 - [x] Connect customer sign-in to a protected dashboard with overview, own shipments, tracking and history.
 - [x] Add permitted profile editing, private pictures, notifications, support conversations and secure settings; verified profile/picture/support/preferences read-back with a temporary customer.
 - [x] Enforce suspension and ownership with PostgreSQL tests; automatically refresh both workspaces; verify eight account sections on desktop/phone and phone logout.
-- [ ] Verify customer/administrator shipment and reply updates end-to-end: awaits verified owner access and genuine operational shipment records.
+- [x] Verify customer/administrator shipment and reply updates end-to-end: confirmed automatic read-back using clearly labelled temporary verification records, then removed them; no real deliveries or customer records changed.
 - [ ] Verify delivered password/email recovery and automated SMS: email inbox verification and an SMS provider are required; phone changes currently create company-verification requests.
 - [x] Fix only the two selected findings: deployed shipment and history reads require active customer status; PostgreSQL fixture tests verify unchanged-session suspension denial, owner isolation and master access. Live signed-in UI check unavailable.
 - [x] Confirm the sole owner email spelling as ogrichindeed@gmail.com.
@@ -11,7 +12,7 @@
 - [x] Remove the previous access email from current website configuration and copy without deleting account history.
 - [x] Add shared show/hide eyes to all customer and workspace password fields; customer sign-in/signup and ceo 001 sign-in verified, recovery and signed-in settings require valid owner sessions.
 - [x] Rename sign-in to ceo 001, remove administrator wording and show passcode only; retain verified master authentication.
-- [ ] Set the requested ceo 001 credential: requires the owner to set it through the secure account recovery link; no credential is embedded in the website.
+- [x] Confirm the supplied ceo 001 credential works through real Cloud sign-in; no credential is embedded in the website.
 - [x] Replace the homepage half-turn with slow, subtle left-to-right motion while preserving its layout and imagery.
 - [x] Cross-check every page on desktop and mobile: 58 loading checks passed; signed-in administrator screens remain unverified.
 - [x] Add a 180-degree homepage entrance and a logo-adjacent 15-language selector that translates public pages.
@@ -27,7 +28,7 @@
 - [x] Design corporate website and all navigation pages.
 - [x] Connect tracking, customer accounts, booking, quotes and contact requests.
 - [x] Verify mobile layout, public request submissions, unknown tracking numbers and shipment privacy tests.
-- [ ] Verify signed-in booking submission: customer dashboard flows verified, booking submission remains untested.
+- [x] Verify signed-in booking submission: temporary request reached the owner inbox and the owner's pending review status refreshed in the customer's booking history; request removed afterward.
 - [ ] Verify positive operational tracking: awaiting actual company shipment records.
 - [ ] Official contact details, supported destinations and genuine reviews: awaiting owner information.- [x] Connect Tawk.to live chat widget on public pages (not admin); sandbox browser blocks the external chat service, real-browser rendering unverified.
 - [x] Set +1 000 000 SED as the published contact phone number on the contact page.

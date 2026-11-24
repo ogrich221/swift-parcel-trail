@@ -8,6 +8,7 @@ import { TrackingPanel } from '@/components/tracking-panel';
 import { TrackingMap } from '@/components/tracking-map';
 import { DEMO_SHIPMENTS } from '@/lib/demo-shipments';
 import { Button } from '@/components/ui/button';
+import { startTrackingRefresh } from '@/lib/tracking-refresh';
 import { pageHead, parseTracking, shipmentStages, stageState, trackingSchema } from '@/lib/shipment';
 
 export const Route = createFileRoute('/track')({
@@ -30,7 +31,10 @@ function Track() {
 
   useEffect(() => {
     let alive = true;
-    async function lookup() {
+    let pending = false;
+    setRecord(null);
+    setError('');
+    async function lookup(initial = true) {
       if (!id || !id.trim()) {
         setRecord(null);
         setError('');
@@ -38,9 +42,9 @@ function Track() {
       }
 
       const cleanId = id.trim().toUpperCase();
-      setBusy(true);
-      setRecord(null);
-      setError('');
+      if (pending) return;
+      pending = true;
+      if (initial) setBusy(true);
 
       // Check if it's one of the demo/sample tracking numbers
       const demoRecord = DEMO_SHIPMENTS[cleanId];
@@ -49,6 +53,7 @@ function Track() {
           setRecord(demoRecord);
           setBusy(false);
         }
+        pending = false;
         return;
       }
 
@@ -60,6 +65,7 @@ function Track() {
         const row = parseTracking(data);
         if (alive) {
           setRecord(row);
+          setError('');
           if (!row) {
             setError(
               'Tracking number not found. Check your shipping receipt or try one of our live sample numbers below.'
@@ -69,13 +75,18 @@ function Track() {
       } catch {
         if (alive) setError('Tracking is temporarily unavailable. Please try again.');
       } finally {
+        pending = false;
         if (alive) setBusy(false);
       }
     }
 
     void lookup();
+    const stopRefresh = id?.trim() && !DEMO_SHIPMENTS[id.trim().toUpperCase()]
+      ? startTrackingRefresh(() => lookup(false))
+      : () => {};
     return () => {
       alive = false;
+      stopRefresh();
     };
   }, [id]);
 

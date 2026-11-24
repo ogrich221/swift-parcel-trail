@@ -113,6 +113,13 @@
       "when": 1795441000000,
       "tag": "0015_sync_customer_registration_profile",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1795513852133,
+      "tag": "0016_sync_cancelled_public_tracking",
+      "breakpoints": true
     }
   ]
 }

@@ -4,4 +4,5 @@ export const requestSchema = z.object({email:z.string().email(),name:z.string().
 export const shipmentStages = ['Shipment Registered','Picked Up','Processing','In Transit','Arrived at Sorting Facility','Out for Delivery','Delivered'];
 export function stageState(status:string,index:number) { const current=shipmentStages.indexOf(status); return index < current ? 'completed' : index === current ? 'active' : 'pending'; }
 export function parseTracking(data:unknown) { return data === null ? null : trackingSchema.parse(data); }
+export function shipmentDisplayStatus(status:string,cancelledAt:string|null|undefined) { return cancelledAt ? 'Cancelled' : status; }
 export function pageHead(title:string,description:string) {return {meta:[{title:`${title} | Swift Delivery Express`},{name:'description',content:description},{property:'og:title',content:`${title} | Swift Delivery Express`},{property:'og:description',content:description},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}]};}

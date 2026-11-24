@@ -1,8 +1,9 @@
 import {describe,it,expect} from 'vitest';
-import {parseTracking,stageState,requestSchema,shipmentStages} from '@/lib/shipment';
+import {parseTracking,stageState,requestSchema,shipmentStages,shipmentDisplayStatus} from '@/lib/shipment';
 import {readFileSync} from 'node:fs';
 describe('shipment rules',()=>{
  it('never fabricates tracking for missing records',()=>{expect(parseTracking(null)).toBeNull();});
+ it('shows cancellation rather than the last travel status in account and administrator maps',()=>{expect(shipmentDisplayStatus('In Transit','2026-11-24T09:50:00Z')).toBe('Cancelled');expect(shipmentDisplayStatus('In Transit',null)).toBe('In Transit');});
  it('rejects incomplete tracking records',()=>{expect(()=>parseTracking({tracking_id:'UNKNOWN'})).toThrow();});
  it('marks completed active and pending delivery stages separately',()=>{expect(stageState('In Transit',0)).toBe('completed');expect(stageState('In Transit',3)).toBe('active');expect(stageState('In Transit',6)).toBe('pending');});
  it('includes registered and delivered operational stages',()=>{expect(shipmentStages[0]).toBe('Shipment Registered');expect(shipmentStages[6]).toBe('Delivered');});

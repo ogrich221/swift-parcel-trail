@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useCustomer } from '@/lib/customer/query';
 import { shipmentGroup } from '@/lib/customer/schema';
 import { TrackingMap } from '@/components/tracking-map';
+import { shipmentDisplayStatus } from '@/lib/shipment';
 import { Heading, ShipmentTable, Empty, Status, date } from './common';
 
 export function Overview() {
@@ -25,7 +26,7 @@ export function ShipmentDetails({id}: {id: string}) {
     tracking_id: s.tracking_id,
     origin: s.origin,
     destination: s.destination,
-    status: s.status,
+    status: shipmentDisplayStatus(s.status, s.cancelled_at),
     latest_location: s.latest_location,
     estimated_delivery: s.estimated_delivery,
     created_at: s.created_at,

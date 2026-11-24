@@ -50,3 +50,5 @@ use the editor.
 - Keep the customer workspace under the managed authenticated gate with a suspense query, active-account database checks and whitelisted profile RPCs; share operational tables and automatically refresh both workspaces so customer changes never create parallel shipment records.
 - Record only authenticated dashboard session visits as login history; never label historical visits as currently active sessions or expose authentication tokens.
 - Automatic administrator refreshes validate access without extending inactivity; only explicit operations renew activity so synchronisation cannot keep an unattended session alive.
+- Preserve timezone and millisecond precision in operational datetime inputs, and refresh open public tracking without discarding its last confirmed result so all shipment views stay synchronized.
+- Project cancellation ahead of the last travel status in public tracking and shared account/admin map records, preserving historical events rather than inventing a cancellation travel event.

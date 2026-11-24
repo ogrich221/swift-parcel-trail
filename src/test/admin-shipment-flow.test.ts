@@ -19,6 +19,7 @@ describe('administrator shipment and public tracking flow', () => {
     `);
     await db.exec(readFileSync('drizzle/migrations/0000_courier_requests_and_tracking.sql', 'utf8'));
     await db.exec(readFileSync('drizzle/migrations/0001_master_admin_operations.sql', 'utf8'));
+    await db.exec(readFileSync('drizzle/migrations/0016_sync_cancelled_public_tracking.sql', 'utf8'));
     await db.query('INSERT INTO public.user_roles(user_id) VALUES ($1)', [owner]);
   }, 35000);
   afterAll(async () => { await db.close(); });
@@ -76,6 +77,20 @@ describe('administrator shipment and public tracking flow', () => {
       [transit],
     );
     expect(audit.rows[0]?.total).toBe(2);
+  });
+
+  it('shows cancelled public tracking without deleting journey history or permitting more progress', async () => {
+    const shipment = await createShipment();
+    await update(shipment.id, 'In Transit', 'London airport', '2026-01-01T10:00:00Z');
+    await db.query('UPDATE public.shipments SET cancelled_at=now(),updated_by=$1 WHERE id=$2', [owner, shipment.id]);
+    const record = await lookup(shipment.tracking_id);
+    expect(record?.status).toBe('Cancelled');
+    expect(record?.events).toHaveLength(1);
+    expect(record?.events[0]?.status).toBe('In Transit');
+    expect(record).not.toHaveProperty('sender_name');
+    expect(record).not.toHaveProperty('recipient_name');
+    await expect(update(shipment.id, 'Delivered', 'New York', '2026-01-01T12:00:00Z')).rejects.toThrow();
+    await expect(update(shipment.id, 'Processing', 'London', '2026-01-01T12:00:00Z')).rejects.toThrow('Shipment unavailable');
   });
 
   it('denies ordinary customer tracking writes and unverified delivery confirmations', async () => {
